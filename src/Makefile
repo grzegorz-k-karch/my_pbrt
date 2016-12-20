@@ -1,6 +1,6 @@
 all: pbrt
 
-pbrt: pbrt.o scene.o integrator.o parallel.o film.o memory.o sampler.o
+pbrt: pbrt.o scene.o integrator.o parallel.o film.o memory.o sampler.o whitted.o light.o
 	g++ $^ -o $@
 
 pbrt.o: main/pbrt.cpp
@@ -23,6 +23,12 @@ memory.o: core/memory.cpp core/memory.h
 
 sampler.o: core/sampler.cpp core/sampler.h
 	g++ -std=c++11 -c core/sampler.cpp
+
+light.o: core/light.cpp core/light.h
+	g++ -std=c++11 -c core/light.cpp
+
+whitted.o: integrators/whitted.cpp integrators/whitted.h
+	g++ -std=c++11 -c integrators/whitted.cpp -Icore
 
 clean:
 	rm -f ./*~ ./*.o pbrt
