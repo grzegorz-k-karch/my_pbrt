@@ -1,8 +1,10 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+#include "pbrt.h"
 #include <limits>
 #include <algorithm>
+#include <cmath>
 
 namespace pbrt {
 
@@ -19,7 +21,57 @@ template <typename T> class Vector2 {
 
 public:
     Vector2() { x = y = 0; }
-    Vector2(T _x, T _y) : x(_x), y(_y) {}
+    Vector2(T _x, T _y) : x(_x), y(_y) {
+        Assert(!HasNaNs());
+    }
+
+    T operator[](int i) const {
+        Assert(i == 0 || i == 1);
+        if (i == 0) return x;
+        return y;
+    }
+    T& operator[](int i) {
+        Assert(i == 0 || i == 1);
+        if (i == 0) return x;
+        return y;
+    }
+    Vector2<T> operator+(const Vector2<T>& v) const {
+        return Vector2(x + v.x, y + v.y);
+    }
+    Vector2<T>& operator+=(const Vector2<T>& v) {
+        x += v.x; y + v.y;;
+        return *this;
+    }
+    Vector2<T> operator-(const Vector2<T>& v) const {
+        return Vector2(x - v.x, y - v.y);
+    }
+    Vector2<T>& operator-=(const Vector2<T>& v) {
+        x -= v.x; y - v.y;;
+        return *this;
+    }
+    Vector2<T> operator*(T s) const {
+        return Vector2(s*x, s*y);
+    }
+    Vector2<T>& operator*=(T s) {
+        x *= s; y *= s;
+        return *this;
+    }
+    Vector2<T> operator/(T s) const {
+        Assert(s != 0);
+        Float inv = 1/s;
+        return Vector2(x*inv, y*inv);
+    }
+    Vector2<T>& operator/=(T s) {
+        Assert(s != 0);
+        Float inv = 1/s;
+        x *= inv; y *= inv;
+        return *this;
+    }
+    Vector2<T> operator-() const { return Vector2<T>(-x, -y); }
+
+    bool HasNaNs() const {
+        return std::isnan(x) || std::isnan(y);
+    }
 
     T x, y;
 //    explicit Vector2(const Vector3<T>& p) : x(p.x), y(p.y) {
@@ -27,8 +79,83 @@ public:
 //    }
 };
 
+template <typename T> inline Vector2<T>
+operator*(T s, const Vector2<T>& v) { return v*s; }
+
+template <typename T> inline Vector2<T>
+Abs(const Vector2<T>& v) { return Vector2<T>(std::abs(v.x), std::abs(v.y)); }
+
+template <typename T> class Vector3 {
+
+public:
+    Vector3() { x = y = z = 0; }
+    Vector3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {
+        Assert(!HasNaNs());
+    }
+
+    T operator[](int i) const {
+        Assert(i >= 0 && i <= 2);
+        if (i == 0) return x;
+        if (i == 1) return y;
+        return z;
+    }
+    T& operator[](int i) {
+        Assert(i >= 0 && i <= 2);
+        if (i == 0) return x;
+        if (i == 1) return y;
+        return z;
+    }
+    Vector3<T> operator+(const Vector3<T>& v) const {
+        return Vector3(x + v.x, y + v.y, z + v.z);
+    }
+    Vector3<T>& operator+=(const Vector3<T>& v) {
+        x += v.x; y + v.y; z + v.z;
+        return *this;
+    }
+    Vector3<T> operator-(const Vector3<T>& v) const {
+        return Vector3(x - v.x, y - v.y, z - v.z);
+    }
+    Vector3<T>& operator-=(const Vector3<T>& v) {
+        x -= v.x; y - v.y; z - v.z;
+        return *this;
+    }
+    Vector3<T> operator*(T s) const {
+        return Vector3(s*x, s*y, s*z);
+    }
+    Vector3<T>& operator*=(T s) {
+        x *= s; y *= s; z *= s;
+        return *this;
+    }
+    Vector3<T> operator/(T s) const {
+        Assert(s != 0);
+        Float inv = 1/s;
+        return Vector3(x*inv, y*inv, z*inv);
+    }
+    Vector3<T>& operator/=(T s) {
+        Assert(s != 0);
+        Float inv = 1/s;
+        x *= inv; y *= inv; z *= inv;
+        return *this;
+    }
+    Vector3<T> operator-() const { return Vector3<T>(-x, -y, -z); }
+
+    bool HasNaNs() const {
+        return std::isnan(x) || std::isnan(y) || std::isnan(z);
+    }
+
+    T x, y, z;
+};
+
+template <typename T> inline Vector3<T>
+operator*(T s, const Vector3<T>& v) { return v*s; }
+
+template <typename T> inline Vector3<T>
+Abs(const Vector3<T>& v) { return Vector3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z)); }
+
 typedef Vector2<int> Vector2i;
 typedef Vector2<float> Vector2f;
+typedef Vector3<int> Vector3i;
+typedef Vector3<float> Vector3f;
 
 // <point declarations>
 template <typename T> class Point2 {
