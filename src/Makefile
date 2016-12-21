@@ -7,28 +7,28 @@ pbrt.o: main/pbrt.cpp
 	g++ -std=c++11 -c $^
 
 scene.o: core/scene.cpp core/scene.h
-	g++ -std=c++11 -c core/scene.cpp
+	g++ -std=c++11 -c $<
 
 integrator.o: core/integrator.cpp core/integrator.h
-	g++ -std=c++11 -c core/integrator.cpp
+	g++ -std=c++11 -c $<
 
 parallel.o: core/parallel.cpp core/parallel.h
-	g++ -std=c++11 -c core/parallel.cpp
+	g++ -std=c++11 -c $<
 
 film.o: core/film.cpp core/film.h
-	g++ -std=c++11 -c core/film.cpp
+	g++ -std=c++11 -c $<
 
 memory.o: core/memory.cpp core/memory.h
-	g++ -std=c++11 -c core/memory.cpp
+	g++ -std=c++11 -c $<
 
 sampler.o: core/sampler.cpp core/sampler.h
-	g++ -std=c++11 -c core/sampler.cpp
+	g++ -std=c++11 -c $<
 
 light.o: core/light.cpp core/light.h
-	g++ -std=c++11 -c core/light.cpp
+	g++ -std=c++11 -c $<
 
 whitted.o: integrators/whitted.cpp integrators/whitted.h
-	g++ -std=c++11 -c integrators/whitted.cpp -Icore
+	g++ -std=c++11 -c $< -Icore
 
 clean:
 	rm -f ./*~ ./*.o pbrt
