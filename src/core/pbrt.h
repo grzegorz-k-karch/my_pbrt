@@ -2,6 +2,7 @@
 #define PBRT_H
 
 #include <assert.h>
+#include <limits>
 
 #ifdef PBRT_FLOAT_AS_DOUBLE
 typedef double Float;
@@ -24,5 +25,8 @@ typedef RGBSpectrum Spectrum;
 //            Severe("Assertion \"%s\" failed in %s. line %d", \
 //                    #expr, __FILE__, __LINE__))
 #endif//NDEBUG
+
+// <global constants>
+static constexpr Float Infinity = std::numeric_limits<Float>::infinity();
 
 #endif//PBRT_H
