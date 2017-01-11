@@ -1,6 +1,6 @@
 all: pbrt
 
-pbrt: pbrt.o scene.o integrator.o parallel.o film.o memory.o sampler.o whitted.o light.o
+pbrt: pbrt.o scene.o integrator.o parallel.o film.o memory.o sampler.o whitted.o light.o transform.o error.o
 	g++ $^ -o $@
 
 pbrt.o: main/pbrt.cpp
@@ -25,6 +25,12 @@ sampler.o: core/sampler.cpp core/sampler.h
 	g++ -std=c++11 -c $<
 
 light.o: core/light.cpp core/light.h
+	g++ -std=c++11 -c $<
+
+transform.o: core/transform.cpp core/transform.h
+	g++ -std=c++11 -c $<
+
+error.o: core/error.cpp core/error.h
 	g++ -std=c++11 -c $<
 
 whitted.o: integrators/whitted.cpp integrators/whitted.h

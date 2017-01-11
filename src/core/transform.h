@@ -1,5 +1,5 @@
-#ifndef CORE_TRANSFORM_H_
-#define CORE_TRANSFORM_H_
+#ifndef CORE_TRANSFORM_H
+#define CORE_TRANSFORM_H
 
 #include "pbrt.h"
 #include "geometry.h"
@@ -14,12 +14,13 @@ struct Matrix4x4 {
         m[2][0] = m[2][1] = m[2][3] =
         m[3][0] = m[3][1] = m[3][2] = 0.f;
     }
-    Matrix4x4(Matrix4x4 _m);
+    Matrix4x4(Float _m[4][4]);
     Matrix4x4(Float t00, Float t01, Float t02, Float t03,
               Float t10, Float t11, Float t12, Float t13,
               Float t20, Float t21, Float t22, Float t23,
               Float t30, Float t31, Float t32, Float t33);
 
+    friend Matrix4x4 Transpose(const Matrix4x4&);
     friend Matrix4x4 Inverse(const Matrix4x4&);
     Float m[4][4];
 };
@@ -33,4 +34,4 @@ private:
 
 } /* namespace pbrt */
 
-#endif//CORE_TRANSFORM_H_
+#endif//CORE_TRANSFORM_H
