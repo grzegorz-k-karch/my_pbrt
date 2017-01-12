@@ -29,4 +29,9 @@ typedef RGBSpectrum Spectrum;
 // <global constants>
 static constexpr Float Infinity = std::numeric_limits<Float>::infinity();
 
+static constexpr Float Pi = 3.14159265358979323846;
+
+inline Float Radians(Float deg) { return (Pi/180)*deg; }
+inline Float Degrees(Float rad) { return (180/Pi)*rad; }
+
 #endif//PBRT_H

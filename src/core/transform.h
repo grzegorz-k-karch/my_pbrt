@@ -74,16 +74,37 @@ public:
                 m.m[0][0] == 0.f && m.m[0][0] == 0.f && m.m[0][0] == 0.f && m.m[0][0] == 1.f);
     }
 
-//    bool HasScale() const {
-//Float la2 = (*this)(Vector3f(1, 0, 0)).
-//    }
+    bool HasScale() const {
+        Float la2 = (*this)(Vector3f(1, 0, 0)).LengthSquared();
+        Float lb2 = (*this)(Vector3f(0, 1, 0)).LengthSquared();
+        Float lc2 = (*this)(Vector3f(0, 0, 1)).LengthSquared();
+#define NOT_ONE(x) ((x) < .999f || (x) > 1.001f)
+        return (NOT_ONE(la2) || NOT_ONE(lb2) || NOT_ONE(lc2));
+#undef NOT_ONE
+    }
+
+    template <typename T>
+    inline Vector3<T> operator()(const Vector3<T>& v) const;
+
 private:
     Matrix4x4 m, mInv;
 };
 
 Transform Translate(const Vector3f& delta);
 Transform Scale(Float x, Float y, Float z);
+Transform RotateX(Float theta);
+Transform RotateY(Float theta);
+Transform RotateZ(Float theta);
+Transform Rotate(Float theta, const Vector3f& axis);
+Transform LookAt(const Point3f& pos, const Point3f& look, const Vector3f& up);
 
+    template <typename T> inline Vector3<T>
+    Transform::operator()(const Vector3<T>& v) const {
+        T x = v.x, y = v.y, z = v.z;
+        return Vector3<T>(m.m[0][0]*x + m.m[0][1]*y + m.m[0][2]*z,
+                          m.m[1][0]*x + m.m[1][1]*y + m.m[1][2]*z,
+                          m.m[2][0]*x + m.m[2][1]*y + m.m[2][2]*z);
+    }
 } /* namespace pbrt */
 
 #endif//CORE_TRANSFORM_H
