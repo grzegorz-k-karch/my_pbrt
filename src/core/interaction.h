@@ -7,15 +7,16 @@
 
 namespace pbrt {
 
-struct Interaction {
+  struct Interaction {
 
-    Interaction(const Point3f& p, const Normal3f& n, const Vector3f& pError,
-                const Vector3f& wo, Float time) // TODO, const MediumInterface& mediumInterface)
-    : p(p), time(time), pError(pError), wo(wo), n(n) {} // TODO , mediumInterface(mediumInterface) {}
+  Interaction() : time(0) {}
+  Interaction(const Point3f& p, const Normal3f& n, const Vector3f& pError,
+	      const Vector3f& wo, Float time) // TODO, const MediumInterface& mediumInterface)
+  : p(p), time(time), pError(pError), wo(wo), n(n) {} // TODO , mediumInterface(mediumInterface) {}
 
 
     bool IsSurfaceInteraction() const {
-        return n != Normal3f();
+      return n != Normal3f();
     }
 
     // data
@@ -25,10 +26,12 @@ struct Interaction {
     Vector3f wo;
     Normal3f n;
     MediumInterface mediumInterface;
-};
+  };
 
-class SurfaceInteraction : public Interaction {
+  class SurfaceInteraction : public Interaction {
 
+  public:
+    SurfaceInteraction() {}
     SurfaceInteraction(const Point3f& p, const Vector3f& pError, const Point2f& uv,
                        const Vector3f& wo, const Vector3f& dpdu, const Vector3f& dpdv,
                        const Normal3f& dndu, const Normal3f& dndv, Float time,
@@ -45,11 +48,11 @@ class SurfaceInteraction : public Interaction {
     const Shape *shape = nullptr;
 
     struct {
-        Normal3f n;
-        Vector3f dpdu, dpdv;
-        Normal3f dndu, dndv;
+      Normal3f n;
+      Vector3f dpdu, dpdv;
+      Normal3f dndu, dndv;
     } shading;
-};
+  };
 
 } // namespace pbrt
 
