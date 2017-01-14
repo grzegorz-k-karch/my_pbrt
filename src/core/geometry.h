@@ -297,6 +297,12 @@ public:
         return *this;
     }
 
+    Point3<T> operator/(T s) const {
+        Assert(s != 0);
+        Float inv = 1/s;
+        return Point3<T>(x*inv, y*inv, z*inv);
+    }
+
     bool HasNaNs() const {
         return std::isnan(x) || std::isnan(y) || std::isnan(z);
     }
@@ -355,14 +361,40 @@ typedef Point3<int> Point3i;
 typedef Point3<float> Point3f;
 
 template <typename T> class Normal3 {
+
 public:
+
+    Normal3() { x = y = z = 0; }
+    Normal3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {
+        Assert(!HasNaNs());
+    }
     explicit Normal3(const Vector3<T>& v) : x(v.x), y(v.y), z(v.z) {
         Assert(!HasNaNs());
+    }
+
+    bool operator!=(const Normal3<T>& n) const {
+        return x != n.x || y != n.y || z != n.z;
+    }
+
+    Normal3<T> operator-() const { return Normal3<T>(-x, -y, -z); }
+
+    Normal3<T> operator*=(T s) {
+        x *= s; y *= s; z *= s;
+        return *this;
+    }
+
+    Normal3<T> operator/(T s) const {
+        Assert(s != 0);
+        Float inv = 1/s;
+        return Normal3<T>(x*inv, y*inv, z*inv);
     }
 
     bool HasNaNs() const {
         return std::isnan(x) || std::isnan(y) || std::isnan(z);
     }
+
+    Float LengthSquared() const { return x*x + y*y + z*z; }
+    Float Length() const { return std::sqrt(LengthSquared()); }
 
     T x, y, z;
 };
@@ -400,6 +432,16 @@ AbsDot(const Normal3<T>& n1, const Normal3<T>& n2) {
 template <typename T> inline Normal3<T>
 Faceforward(const Normal3<T>& n, const Vector3<T>& v) {
     return (Dot(n,v) < 0.f) ? -n : n;
+}
+
+template <typename T> inline Normal3<T>
+Faceforward(const Normal3<T>& n1, const Normal3<T>& n2) {
+    return (Dot(n1,n2) < 0.f) ? -n1 : n1;
+}
+
+template <typename T> inline Normal3<T>
+Normalize(const Normal3<T>& n) {
+    return n/n.Length();
 }
 
 typedef Normal3<Float> Normal3f;
