@@ -51,6 +51,8 @@ struct Matrix4x4 {
     Float m[4][4];
 };
 
+class SurfaceInteraction;
+
 class Transform {
 public:
     Transform(const Float mat[4][4]) {
@@ -81,8 +83,6 @@ public:
     }
     Transform operator*(const Transform& t2) const;
 
-    SurfaceInteraction operator()(const SurfaceInteraction& si) const;
-
     bool IsIdentity() const {
         return (m.m[0][0] == 1.f && m.m[0][0] == 0.f && m.m[0][0] == 0.f && m.m[0][0] == 0.f &&
                 m.m[0][0] == 0.f && m.m[0][0] == 1.f && m.m[0][0] == 0.f && m.m[0][0] == 0.f &&
@@ -104,8 +104,10 @@ public:
     template <typename T> inline Point3<T> operator ()(const Point3<T>& p) const;
     template <typename T> inline Vector3<T> operator()(const Vector3<T>& v) const;
     template <typename T> inline Normal3<T> operator ()(const Normal3<T>& n) const;
+    template <typename T> inline Bounds3<T> operator ()(const Bounds3<T>& n) const;
     inline Ray operator()(const Ray& r) const;
     Bounds3f operator()(const Bounds3f& b) const;
+    SurfaceInteraction operator()(const SurfaceInteraction& si) const;
 
 private:
     Matrix4x4 m, mInv;
@@ -136,6 +138,14 @@ Transform::operator()(const Normal3<T>& n) const {
     return Normal3<T>(mInv.m[0][0]*x + mInv.m[1][0]*y + mInv.m[2][0]*z,
                       mInv.m[0][1]*x + mInv.m[1][1]*y + mInv.m[2][1]*z,
                       mInv.m[0][2]*x + mInv.m[1][2]*y + mInv.m[2][2]*z);
+}
+
+template <typename T> inline Bounds3<T>
+Transform::operator()(const Bounds3<T>& b) const {
+    T x = b.x, y = b.y, z = b.z;
+    return Bounds3<T>(m.m[0][0]*x + m.m[0][1]*y + m.m[0][2]*z,
+                      m.m[1][0]*x + m.m[1][1]*y + m.m[1][2]*z,
+                      m.m[2][0]*x + m.m[2][1]*y + m.m[2][2]*z);
 }
 
 inline Ray Transform::operator()(const Ray& r) const {

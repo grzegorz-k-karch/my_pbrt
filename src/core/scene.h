@@ -17,22 +17,22 @@ public:
           const std::vector<std::shared_ptr<Light>>& lights)
     : lights(lights), aggregate(aggregate) {
         // <scene constructor implementation>
-//        worldBound = aggregate->WorldBound();
+// TODO       worldBound = aggregate->WorldBound();
         for (const auto &light : lights) {
-//            light->Preprocess(*this);
+// TODO         light->Preprocess(*this);
         }
     }
 
     bool Intersect(const Ray& ray, SurfaceInteraction* isect) const;
     bool IntersectP(const Ray& ray) const;
 
-//    const Bounds3f& WorldBound() const { return worldBound; }
+    const Bounds3f& WorldBound() const { return worldBound; }
     // <scene public data>
     std::vector<std::shared_ptr<Light>> lights;
 private:
     // <scene private data>
     std::shared_ptr<Primitive> aggregate;
-//    Bounds3f worldBound;
+    Bounds3f worldBound;
 };
 
 }

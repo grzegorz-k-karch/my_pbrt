@@ -266,6 +266,19 @@ public:
         Assert(!HasNaNs());
     }
 
+    T operator[](int i) const {
+        Assert(i >= 0 && i <= 2);
+        if (i == 0) return x;
+        if (i == 1) return y;
+        return z;
+    }
+    T& operator[](int i) {
+        Assert(i >= 0 && i <= 2);
+        if (i == 0) return x;
+        if (i == 1) return y;
+        return z;
+    }
+
     template <typename U> explicit Point3(const Point3<U>& p)
     : x((T)p.x), y((T)p.y), z((T)p.z) {
         Assert(!HasNaNs());
@@ -589,9 +602,61 @@ public:
         *radius = Inside(*center, *this) ? Distance(*center, pMax) : 0;
     }
 
+    inline bool IntersectP(const Ray& ray, Float* hitt0, Float* hitt1) const;
+    inline bool IntersectP(const Ray& ray, const Vector3f& invDir, const int dirIsNeg[3]) const;
+
     Point3<T> pMin, pMax;
 };
 
+typedef Bounds2<int> Bounds2i;
+typedef Bounds2<float> Bounds2f;
+typedef Bounds3<int> Bounds3i;
+typedef Bounds3<float> Bounds3f;
+
+template <typename T> inline bool
+Bounds3<T>::IntersectP(const Ray& ray, Float* hitt0, Float* hitt1) const {
+
+    Float t0 = 0, t1 = ray.tMax;
+    for (int i = 0; i < 3; ++i) {
+        Float invRayDir = 1/ray.d[i];
+        Float tNear = (pMin[i] - ray.o[i])*invRayDir;
+        Float tFar = (pMax[i] - ray.o[i])*invRayDir;
+        if (tNear > tFar) std::swap(tNear, tFar);
+        // TODO <update tFar to ensure robust ray-bounds intersection>
+        t0 = tNear > t0 ? tNear : t0;
+        t1 = tFar < t1 ? tFar : t1;
+        if (t0 > t1) return false;
+    }
+    if (hitt0) *hitt0 = t0;
+    if (hitt1) *hitt1 = t1;
+    return true;
+}
+
+template <typename T> inline bool
+Bounds3<T>::IntersectP(const Ray& ray, const Vector3f& invDir, const int dirIsNeg[3]) const {
+
+  const Bounds3f &bounds = *this;
+
+  Float tMin = (bounds[  dirIsNeg[0]].x - ray.o.x)*invDir.x;
+  Float tMax = (bounds[1-dirIsNeg[0]].x - ray.o.x)*invDir.x;
+  Float tyMin = (bounds[  dirIsNeg[1]].y - ray.o.y)*invDir.y;
+  Float tyMax = (bounds[1-dirIsNeg[1]].y - ray.o.y)*invDir.y;
+  // TODO <update tMax and tyMax to ensure robust bounds intersection>
+  if (tMin > tyMax || tyMin > tMax)
+    return false;
+  if (tyMin > tMin) tMin = tyMin;
+  if (tyMax < tMax) tMax = tyMax;
+
+  Float tzMin = (bounds[  dirIsNeg[2]].z - ray.o.z)*invDir.z;
+  Float tzMax = (bounds[1-dirIsNeg[2]].z - ray.o.z)*invDir.z;
+  // TODO <update tzMax to ensure robust bounds intersection>
+  if (tMin > tzMax || tzMin > tMax)
+    return false;
+  if (tzMin > tMin) tMin = tzMin;
+  if (tzMax < tMax) tMax = tzMax;
+
+  return (tMin < ray.tMax) && (tMax > 0);
+}
 
 template <typename T> Bounds3<T>
 Union(const Bounds3<T>& b, const Point3<T>& p) {
@@ -660,11 +725,6 @@ Expand(const Bounds3<T>& b, U delta) {
 return Bounds3<T>(b.pMin - Vector3<T>(delta, delta, delta),
                   b.pMax + Vector3<T>(delta, delta, delta));
 }
-
-typedef Bounds2<int> Bounds2i;
-typedef Bounds2<float> Bounds2f;
-typedef Bounds3<int> Bounds3i;
-typedef Bounds3<float> Bounds3f;
 
 }
 
