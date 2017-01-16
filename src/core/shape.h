@@ -8,6 +8,7 @@
 namespace pbrt {
 
 class Transform;
+class SurfaceInteraction;
 
 class Shape {
 
@@ -24,8 +25,8 @@ public:
       bool testAlphaTexture = true) const = 0;
   virtual bool IntersetP(const Ray& ray, bool testAlphaTexture = true) const {
     Float tHit = ray.tMax;
-    SurfaceInteraction isect;
-    return Intersect(ray, &tHit, &isect, testAlphaTexture);
+// TODO   SurfaceInteraction isect;
+// TODO   return Intersect(ray, &tHit, &isect, testAlphaTexture);
   }
 
   virtual Float Area() const = 0;

@@ -5,9 +5,9 @@
 #include "medium.h"
 #include "shape.h"
 
-class Shape;
-
 namespace pbrt {
+
+class Shape;
 
 struct Interaction {
 
@@ -27,7 +27,7 @@ struct Interaction {
   Vector3f pError;
   Vector3f wo;
   Normal3f n;
-  MediumInterface mediumInterface;
+  // TODO MediumInterface mediumInterface;
 };
 
 class SurfaceInteraction : public Interaction {
@@ -35,13 +35,13 @@ class SurfaceInteraction : public Interaction {
 public:
   SurfaceInteraction() {}
   SurfaceInteraction(const Point3f& p, const Vector3f& pError, const Point2f& uv,
-      const Vector3f& wo, const Vector3f& dpdu, const Vector3f& dpdv,
-      const Normal3f& dndu, const Normal3f& dndv, Float time,
-      const Shape* shape);
+                     const Vector3f& wo, const Vector3f& dpdu, const Vector3f& dpdv,
+                     const Normal3f& dndu, const Normal3f& dndv, Float time,
+                     const Shape* shape);
 
   void SetShadingGeometry(const Vector3f& dpdus, const Vector3f& dpdvs,
-      const Normal3f& dndus, const Normal3f& dndvs,
-      bool orientationIsAuthoritative);
+                          const Normal3f& dndus, const Normal3f& dndvs,
+                          bool orientationIsAuthoritative);
 
   // data
   Point2f uv;

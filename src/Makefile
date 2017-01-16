@@ -1,10 +1,13 @@
 all: pbrt
 
-pbrt: pbrt.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o whitted.o light.o transform.o error.o interaction.o
+pbrt: pbrt.o sphere.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o whitted.o light.o transform.o error.o interaction.o
 	g++ $^ -o $@
 
 pbrt.o: main/pbrt.cpp
 	g++ -std=c++11 -c $^
+
+sphere.o: shapes/sphere.cpp shapes/sphere.h
+	g++ -std=c++11 -c $< -Icore
 
 scene.o: core/scene.cpp core/scene.h
 	g++ -std=c++11 -c $<

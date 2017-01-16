@@ -8,11 +8,6 @@
 
 namespace pbrt {
 
-inline Float
-Lerp(Float t, Float v1, Float v2) {
-    return (1 - t)*v1 + t*v2;
-}
-
 //--------------------------------------------------------------------------
 template <typename T> class Vector2 {
 
