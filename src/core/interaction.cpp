@@ -1,4 +1,5 @@
 #include "interaction.h"
+#include "shape.h"
 
 namespace pbrt {
 
@@ -16,8 +17,7 @@ SurfaceInteraction::SurfaceInteraction(const Point3f& p, const Vector3f& pError,
     shading.dndu = dndu;
     shading.dndv = dndv;
 
-    // <adjust normal based on orientation and handedness>
-    if (shape) { //TODO && (shape->reverseOrientation ^ shape->transformSwapsHandedness)) {
+    if (shape && (shape->reverseOrientation ^ shape->transformSwapsHandedness)) {
         n *= -1;
         shading.n *= -1;
     }
@@ -29,7 +29,7 @@ void SurfaceInteraction::SetShadingGeometry(const Vector3f& dpdus, const Vector3
 
 
     shading.n = Normalize((Normal3f)Cross(dpdus, dpdvs));
-    if (shape) { //TODO && (shape->reverseOrientation ^ shape->transformSwapsHandedness)) {
+    if (shape && (shape->reverseOrientation ^ shape->transformSwapsHandedness)) {
         shading.n = -shading.n;
     }
     if (orientationIsAuthoritative) {
