@@ -3,6 +3,8 @@
 
 #include <assert.h>
 #include <limits>
+#include <cmath>
+#include <utility>
 
 namespace pbrt {
 
@@ -10,9 +12,10 @@ namespace pbrt {
 typedef double Float;
 #else
 typedef float Float;
+typedef float EFloat; // TODO
 #endif//PBRT_FLOAT_AS_DOUBLE
 
-typedef Float RGBSpectrum; // <gkk>
+typedef Float RGBSpectrum; // TODO
 
 typedef RGBSpectrum Spectrum;
 
@@ -30,14 +33,15 @@ typedef RGBSpectrum Spectrum;
 
 // <global constants>
 static constexpr Float Infinity = std::numeric_limits<Float>::infinity();
+static constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon() * 0.5;
+
 
 static constexpr Float Pi = 3.14159265358979323846;
 
 inline Float Radians(Float deg) { return (Pi/180)*deg; }
 inline Float Degrees(Float rad) { return (180/Pi)*rad; }
 
-inline Float
-Lerp(Float t, Float v1, Float v2) {
+inline Float Lerp(Float t, Float v1, Float v2) {
   return (1 - t)*v1 + t*v2;
 }
 
@@ -49,6 +53,27 @@ inline T Clamp(T val, U low, V high) {
     return high;
   else
     return val;
+}
+
+inline bool Quadratic(Float a, Float b, Float c, Float* t0, Float* t1) {
+  double discrim = (double)b*(double)b - 4*(double)a*(double)c;
+  if (discrim < 0)
+    return false;
+  double rootDiscrim = std::sqrt(discrim);
+  double q;
+  if (b < 0)
+    q = -0.5*(b - rootDiscrim);
+  else
+    q = -0.5*(b + rootDiscrim);
+  *t0 = q/a;
+  *t1 = c/q;
+  if (*t0 > *t1)
+    std::swap(*t0, *t1);
+  return true;
+}
+
+inline Float gamma(int n) {
+  return (n * MachineEpsilon) / (1 - n*MachineEpsilon);
 }
 
 } // namespace pbrt
