@@ -236,7 +236,7 @@ SurfaceInteraction Transform::operator()(const SurfaceInteraction& si) const {
   SurfaceInteraction ret;
   // TODO <transform p and pError in SurfaceInteraction>
   // TODO <transform remaining members of SurfaceInteraction>
-  return ret;
+  return si; // ret; // TODO
 }
 
 bool Transform::SwapsHandedness() const {

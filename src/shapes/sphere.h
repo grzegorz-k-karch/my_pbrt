@@ -20,8 +20,12 @@ public:
     phiMax(Radians(Clamp(phiMax, 0, 360))) {}
 
   Bounds3f ObjectBound() const;
+
   bool Intersect(const Ray& r, Float* tHit, SurfaceInteraction* isect,
       bool testAlphaTexture) const;
+  bool IntersectP(const Ray& r, bool testAlphaTexture) const;
+
+  Float Area() const;
 
 private:
     const Float radius;
