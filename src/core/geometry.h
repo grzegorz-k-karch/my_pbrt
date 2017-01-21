@@ -238,8 +238,16 @@ public:
         return Point2<U>(x, y);
     }
 
+    Point2<T> operator+(const Point2<T>& p) const {
+        return Point2<T>(x + p.x, y + p.y);
+    }
+
     Vector2<T> operator-(const Point2<T>& p) const {
         return Vector2<T>(x - p.x, y - p.y);
+    }
+
+    Point2<T> operator*(T s) const {
+      return Point2<T>(x*s, y*s);
     }
 
     explicit Point2(const Point3<T>& p) : x(p.x), y(p.y) {
@@ -252,6 +260,9 @@ public:
 
     T x, y;
 };
+
+template <typename T> inline Point2<T>
+operator*(T s, const Point2<T>& p) { return p*s; }
 
 template <typename T> class Point3 {
 
@@ -287,6 +298,10 @@ public:
         return Point3<T>(x + v.x, y + v.y, z + v.z);
     }
 
+    Point3<T> operator+(const Point3<T>& p) const {
+        return Point3<T>(x + p.x, y + p.y, z + p.z);
+    }
+
     Point3<T>& operator+=(const Vector3<T>& v) {
         x += v.x; y += v.y; z += v.z;
         return *this;
@@ -305,6 +320,10 @@ public:
         return *this;
     }
 
+    Point3<T> operator*(T s) const {
+      return Point3<T>(x*s, y*s, z*s);
+    }
+
     Point3<T> operator/(T s) const {
         Assert(s != 0);
         Float inv = 1/s;
@@ -317,6 +336,10 @@ public:
 
     T x, y, z;
 };
+
+template <typename T> inline Point3<T>
+operator*(T s, const Point3<T>& p) { return p*s; }
+
 
 template <typename T> inline Float
 Distance(const Point3<T>& p1, const Point3<T>& p2) {
