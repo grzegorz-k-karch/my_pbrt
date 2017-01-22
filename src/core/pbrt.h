@@ -5,6 +5,8 @@
 #include <limits>
 #include <cmath>
 #include <utility>
+#include <cstdint>
+#include <cstring>
 
 namespace pbrt {
 
@@ -12,7 +14,6 @@ namespace pbrt {
 typedef double Float;
 #else
 typedef float Float;
-typedef float EFloat; // TODO
 #endif//PBRT_FLOAT_AS_DOUBLE
 
 typedef Float RGBSpectrum; // TODO
@@ -32,12 +33,15 @@ typedef RGBSpectrum Spectrum;
 #endif//NDEBUG
 
 // <global constants>
+static constexpr Float MaxFloat = std::numeric_limits<Float>::max();
 static constexpr Float Infinity = std::numeric_limits<Float>::infinity();
 static constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon() * 0.5;
 
 
 static constexpr Float Pi = 3.14159265358979323846;
 
+
+// <global inline functions>
 inline Float Radians(Float deg) { return (Pi/180)*deg; }
 inline Float Degrees(Float rad) { return (180/Pi)*rad; }
 
@@ -70,6 +74,44 @@ inline bool Quadratic(Float a, Float b, Float c, Float* t0, Float* t1) {
   if (*t0 > *t1)
     std::swap(*t0, *t1);
   return true;
+}
+
+inline uint32_t FloatToBits(float f) {
+  uint32_t ui;
+  memcpy(&ui, &f, sizeof(float));
+  return ui;
+}
+
+inline float BitsToFloat(uint32_t ui) {
+  float f;
+  memcpy(&f, &ui, sizeof(uint32_t));
+  return f;
+}
+
+inline float NextFloatUp(float v) {
+  if (std::isinf(v) && v > 0)
+    return v;
+  if (v == -0.f)
+    v = 0.f;
+  uint32_t ui = FloatToBits(v);
+  if (v >= 0)
+    ++ui;
+  else
+    --ui;
+  return BitsToFloat(ui);
+}
+
+inline float NextFloatDown(float v) {
+  if (std::isinf(v) && v < 0)
+    return v;
+  if (v == 0.f)
+    v = -0.f;
+  uint32_t ui = FloatToBits(v);
+  if (v > 0)
+    --ui;
+  else
+    ++ui;
+  return BitsToFloat(ui);
 }
 
 inline Float gamma(int n) {

@@ -1,4 +1,5 @@
 #include "sphere.h"
+#include "efloat.h"
 
 namespace pbrt {
 
@@ -15,9 +16,9 @@ bool Sphere::Intersect(const Ray& r, Float* tHit, SurfaceInteraction* isect,
   // <transform Ray to object space
   Vector3f oErr, dErr;
   Ray ray = (*worldToObject)(r, &oErr, &dErr);
-  // TODO <compute error bounds for sphere intersection 225>
-  EFloat ox(ray.o.x), oy(ray.o.y), oz(ray.o.z); // TODO
-  EFloat dx(ray.d.x), dy(ray.d.y), dz(ray.d.z); // TODO
+  // <compute error bounds for sphere intersection>
+  EFloat ox(ray.o.x, oErr.x), oy(ray.o.y, oErr.y), oz(ray.o.z, oErr.z);
+  EFloat dx(ray.d.x, dErr.x), dy(ray.d.y, dErr.y), dz(ray.d.z, dErr.z);
 
   // <compute quadratic sphere coefficients>
   EFloat a = dx*dx + dy*dy + dz*dz;
@@ -29,29 +30,23 @@ bool Sphere::Intersect(const Ray& r, Float* tHit, SurfaceInteraction* isect,
   if (!Quadratic(a, b, c, &t0, &t1))
     return false;
 
-// TODO <check quadratic shape t0 and t1 for nearest intersection>
-//  if (t0.UpperBound() > ray.tMax || t1.LowerBound() <= 0)
-//    return false;
-//  EFloat tShapeHit = t0;
-//  if (tShapeHit.LowerBound() <= 0) {
-//    tShapeHit = t1;
-//    if (tShapeHit.UpperBound() > ray.tMax) {
-//      return false;
-//    }
-//  }
-  if (t0 > ray.tMax || t1 <= 0)
+  // <check quadratic shape t0 and t1 for nearest intersection>
+  if (t0.UpperBound() > ray.tMax || t1.LowerBound() <= 0)
     return false;
   EFloat tShapeHit = t0;
-  if (tShapeHit <= 0) {
+  if (tShapeHit.LowerBound() <= 0) {
     tShapeHit = t1;
-    if (tShapeHit > ray.tMax) {
+    if (tShapeHit.UpperBound() > ray.tMax) {
       return false;
     }
   }
 
   // <compute sphere hit position and phi>
   pHit = ray((Float)tShapeHit);
-  // TODO <refine sphere intersection point 225>
+
+  // <refine sphere intersection point 225>
+  pHit *= radius/Distance(pHit, Point3f(0,0,0));
+
   if (pHit.x == 0 && pHit.y == 0)
     pHit.x = 1e-5f*radius;
   phi = std::atan2(pHit.y, pHit.x);
@@ -62,20 +57,25 @@ bool Sphere::Intersect(const Ray& r, Float* tHit, SurfaceInteraction* isect,
   if ((zMin > -radius && pHit.z < zMin) || (zMax < radius && pHit.z > zMax)) {
     if (tShapeHit == t1)
       return false;
-//    if (t1.UpperBound() > ray.tMax) // TODO
-//      return false;
-    if (t1 > ray.tMax)
+    if (t1.UpperBound() > ray.tMax)
       return false;
     tShapeHit = t1;
     pHit = ray((Float)tShapeHit);
-    // TODO <refine sphere intersection point 225>
-    if (pHit.x == 0 && pHit.y == 0)
+
+    // <refine sphere intersection point 225>
+    pHit *= radius/Distance(pHit, Point3f(0,0,0));
+
+    if (pHit.x == 0 && pHit.y == 0) {
       pHit.x = 1e-5f*radius;
+    }
     phi = std::atan2(pHit.y, pHit.x);
-    if (phi < 0)
+    if (phi < 0) {
       phi += 2*Pi;
-    if ((zMin > -radius && pHit.z < zMin) || (zMax < radius && pHit.z > zMax) || phi > phiMax)
+    }
+    if ((zMin > -radius && pHit.z < zMin) ||
+        (zMax < radius && pHit.z > zMax) || phi > phiMax) {
       return false;
+    }
   }
 
   // <find parametric representation of sphere hit>
@@ -113,7 +113,7 @@ bool Sphere::Intersect(const Ray& r, Float* tHit, SurfaceInteraction* isect,
                            (f*F - g*E)*invEGF2*dpdv);
 
   // <initialize SurfaceInteraction from parametric information>
-  Vector3f pError; // TODO
+  Vector3f pError = gamma(5)*Abs((Vector3f)pHit);
   *isect = (*objectToWorld)(SurfaceInteraction(pHit, pError, Point2f(u, v),
                                                -ray.d, dpdu, dpdv, dndu, dndv, ray.time, this));
   *tHit = (Float)tShapeHit;
@@ -142,22 +142,13 @@ bool Sphere::IntersectP(const Ray& r, bool testAlphaTexture) const {
   if (!Quadratic(a, b, c, &t0, &t1))
     return false;
 
-  // TODO <check quadratic shape t0 and t1 for nearest intersection>
-  //  if (t0.UpperBound() > ray.tMax || t1.LowerBound() <= 0)
-  //    return false;
-  //  EFloat tShapeHit = t0;
-  //  if (tShapeHit.LowerBound() <= 0) {
-  //    tShapeHit = t1;
-  //    if (tShapeHit.UpperBound() > ray.tMax) {
-  //      return false;
-  //    }
-  //  }
-  if (t0 > ray.tMax || t1 <= 0)
+  // <check quadratic shape t0 and t1 for nearest intersection>
+  if (t0.UpperBound() > ray.tMax || t1.LowerBound() <= 0)
     return false;
   EFloat tShapeHit = t0;
-  if (tShapeHit <= 0) {
+  if (tShapeHit.LowerBound() <= 0) {
     tShapeHit = t1;
-    if (tShapeHit > ray.tMax) {
+    if (tShapeHit.UpperBound() > ray.tMax) {
       return false;
     }
   }
@@ -175,9 +166,7 @@ bool Sphere::IntersectP(const Ray& r, bool testAlphaTexture) const {
   if ((zMin > -radius && pHit.z < zMin) || (zMax < radius && pHit.z > zMax)) {
     if (tShapeHit == t1)
       return false;
-    //    if (t1.UpperBound() > ray.tMax) // TODO
-    //      return false;
-    if (t1 > ray.tMax)
+    if (t1.UpperBound() > ray.tMax)
       return false;
     tShapeHit = t1;
     pHit = ray((Float)tShapeHit);

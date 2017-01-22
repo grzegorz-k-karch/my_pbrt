@@ -1,6 +1,6 @@
 all: pbrt
 
-pbrt: pbrt.o sphere.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o whitted.o light.o transform.o error.o interaction.o
+pbrt: pbrt.o sphere.o efloat.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o whitted.o light.o transform.o error.o interaction.o
 	g++ $^ -o $@
 
 pbrt.o: main/pbrt.cpp
@@ -28,6 +28,9 @@ film.o: core/film.cpp core/film.h
 	g++ -std=c++11 -c $<
 
 memory.o: core/memory.cpp core/memory.h
+	g++ -std=c++11 -c $<
+
+efloat.o: core/efloat.cpp core/efloat.h
 	g++ -std=c++11 -c $<
 
 shape.o: core/shape.cpp core/shape.h

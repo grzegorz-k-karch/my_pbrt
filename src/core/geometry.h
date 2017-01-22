@@ -324,6 +324,11 @@ public:
       return Point3<T>(x*s, y*s, z*s);
     }
 
+    Point3<T>& operator*=(T s) {
+        x *= s; y *= s; z *= s;
+        return *this;
+    }
+
     Point3<T> operator/(T s) const {
         Assert(s != 0);
         Float inv = 1/s;
@@ -407,7 +412,21 @@ public:
         return x != n.x || y != n.y || z != n.z;
     }
 
-    Normal3<T> operator-() const { return Normal3<T>(-x, -y, -z); }
+    Normal3<T> operator-() const {
+      return Normal3<T>(-x, -y, -z);
+    }
+
+    Normal3<T> operator+(const Normal3<T>& n) const {
+        return Normal3(x + n.x, y + n.y, z + n.z);
+    }
+
+    Normal3<T> operator-(const Normal3<T>& n) const {
+        return Normal3(x - n.x, y - n.y, z - n.z);
+    }
+
+    Normal3<T> operator*(T s) const {
+        return Normal3(s*x, s*y, s*z);
+    }
 
     Normal3<T> operator*=(T s) {
         x *= s; y *= s; z *= s;
@@ -429,6 +448,11 @@ public:
 
     T x, y, z;
 };
+
+template <typename T>
+inline Normal3<T> operator*(T s, const Normal3<T>& n) {
+  return n*s;
+}
 
 template <typename T> inline T
 Dot(const Normal3<T>& n, const Vector3<T>& v) {
@@ -640,7 +664,10 @@ Bounds3<T>::IntersectP(const Ray& ray, Float* hitt0, Float* hitt1) const {
         Float tNear = (pMin[i] - ray.o[i])*invRayDir;
         Float tFar = (pMax[i] - ray.o[i])*invRayDir;
         if (tNear > tFar) std::swap(tNear, tFar);
-        // TODO <update tFar to ensure robust ray-bounds intersection>
+
+        // <update tFar to ensure robust ray-bounds intersection>
+        tFar *= 1 + 2*gamma(3);
+
         t0 = tNear > t0 ? tNear : t0;
         t1 = tFar < t1 ? tFar : t1;
         if (t0 > t1) return false;
@@ -659,7 +686,11 @@ Bounds3<T>::IntersectP(const Ray& ray, const Vector3f& invDir, const int dirIsNe
   Float tMax = (bounds[1-dirIsNeg[0]].x - ray.o.x)*invDir.x;
   Float tyMin = (bounds[  dirIsNeg[1]].y - ray.o.y)*invDir.y;
   Float tyMax = (bounds[1-dirIsNeg[1]].y - ray.o.y)*invDir.y;
-  // TODO <update tMax and tyMax to ensure robust bounds intersection>
+
+  // <update tMax and tyMax to ensure robust bounds intersection>
+  tMax *= 1 + 2*gamma(3);
+  tyMax *= 1 + 2*gamma(3);
+
   if (tMin > tyMax || tyMin > tMax)
     return false;
   if (tyMin > tMin) tMin = tyMin;
@@ -667,7 +698,10 @@ Bounds3<T>::IntersectP(const Ray& ray, const Vector3f& invDir, const int dirIsNe
 
   Float tzMin = (bounds[  dirIsNeg[2]].z - ray.o.z)*invDir.z;
   Float tzMax = (bounds[1-dirIsNeg[2]].z - ray.o.z)*invDir.z;
-  // TODO <update tzMax to ensure robust bounds intersection>
+
+  // <update tzMax to ensure robust bounds intersection>
+  tzMax *= 1 + 2*gamma(3);
+
   if (tMin > tzMax || tzMin > tMax)
     return false;
   if (tzMin > tMin) tMin = tzMin;
