@@ -234,9 +234,40 @@ Transform Transform::operator*(const Transform& t2) const {
 
 SurfaceInteraction Transform::operator()(const SurfaceInteraction& si) const {
   SurfaceInteraction ret;
-  // TODO <transform p and pError in SurfaceInteraction>
-  // TODO <transform remaining members of SurfaceInteraction>
-  return si; // ret; // TODO
+
+  // <transform p and pError in SurfaceInteraction>
+  ret.p = (*this)(si.p, si.pError, &ret.pError);
+
+  // <transform remaining members of SurfaceInteraction>
+  const Transform &t = *this;
+  ret.n = Normalize(t(si.n));
+  ret.wo = Normalize(t(si.wo));
+  ret.time = si.time;
+  // ret.mediumInterface = si.mediumInterface;
+  ret.uv = si.uv;
+  ret.shape = si.shape;
+  ret.dpdu = t(si.dpdu);
+  ret.dpdv = t(si.dpdv);
+  ret.dndu = t(si.dndu);
+  ret.dndv = t(si.dndv);
+  ret.shading.n = Normalize(t(si.shading.n));
+  ret.shading.dpdu = t(si.shading.dpdu);
+  ret.shading.dpdv = t(si.shading.dpdv);
+  ret.shading.dndu = t(si.shading.dndu);
+  ret.shading.dndv = t(si.shading.dndv);
+//  ret.dudx = si.dudx; // TODO
+//  ret.dvdx = si.dvdx; // TODO
+//  ret.dudy = si.dudy; // TODO
+//  ret.dvdy = si.dvdy; // TODO
+//  ret.dpdx = t(si.dpdx); // TODO
+//  ret.dpdy = t(si.dpdy); // TODO
+//  ret.bsdf = si.bsdf; // TODO
+//  ret.bssrdf = si.bssrdf; // TODO
+//  ret.primitive = si.primitive; // TODO
+  //    ret.n = Faceforward(ret.n, ret.shading.n); // was commented...
+  ret.shading.n = Faceforward(ret.shading.n, ret.n);
+
+  return ret;
 }
 
 bool Transform::SwapsHandedness() const {

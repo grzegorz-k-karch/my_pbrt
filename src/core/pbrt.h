@@ -37,6 +37,7 @@ static constexpr Float MaxFloat = std::numeric_limits<Float>::max();
 static constexpr Float Infinity = std::numeric_limits<Float>::infinity();
 static constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon() * 0.5;
 
+const Float ShadowEpsilon = 0.0001f;
 
 static constexpr Float Pi = 3.14159265358979323846;
 

@@ -3,6 +3,7 @@
 
 #include "geometry.h"
 #include "medium.h"
+#include "pbrt.h"
 
 namespace pbrt {
 
@@ -17,6 +18,16 @@ struct Interaction {
 
   bool IsSurfaceInteraction() const {
     return n != Normal3f();
+  }
+
+  Ray SpawnRay(const Vector3f& d) const {
+    Point3f o = OffsetRayOrigin(p, pError, n, d);
+    return Ray(o, d, Infinity, time);//, GetMedium(d)); // TODO
+  }
+  Ray SpawnRayTo(const Point3f& p2) const {
+    Point3f origin = OffsetRayOrigin(p, pError, n, p2 - p);
+    Vector3f d = p2 - origin;
+    return Ray(origin, d, 1 - ShadowEpsilon, time);//, GetMedium(d)); // TODO
   }
 
   // data

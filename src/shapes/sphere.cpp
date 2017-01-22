@@ -112,8 +112,9 @@ bool Sphere::Intersect(const Ray& r, Float* tHit, SurfaceInteraction* isect,
   Normal3f dndv = Normal3f((g*F - f*G)*invEGF2*dpdu +
                            (f*F - g*E)*invEGF2*dpdv);
 
-  // <initialize SurfaceInteraction from parametric information>
+  // <compute error bounds for sphere intersection>
   Vector3f pError = gamma(5)*Abs((Vector3f)pHit);
+  // <initialize SurfaceInteraction from parametric information>
   *isect = (*objectToWorld)(SurfaceInteraction(pHit, pError, Point2f(u, v),
                                                -ray.d, dpdu, dpdv, dndu, dndv, ray.time, this));
   *tHit = (Float)tShapeHit;
@@ -155,7 +156,9 @@ bool Sphere::IntersectP(const Ray& r, bool testAlphaTexture) const {
 
   // <compute sphere hit position and phi>
   pHit = ray((Float)tShapeHit);
-  // TODO <refine sphere intersection point 225>
+  // <refine sphere intersection point 225>
+  pHit *= radius/Distance(pHit, Point3f(0,0,0));
+
   if (pHit.x == 0 && pHit.y == 0)
     pHit.x = 1e-5f*radius;
   phi = std::atan2(pHit.y, pHit.x);
@@ -170,7 +173,9 @@ bool Sphere::IntersectP(const Ray& r, bool testAlphaTexture) const {
       return false;
     tShapeHit = t1;
     pHit = ray((Float)tShapeHit);
-    // TODO <refine sphere intersection point 225>
+    // <refine sphere intersection point 225>
+    pHit *= radius/Distance(pHit, Point3f(0,0,0));
+
     if (pHit.x == 0 && pHit.y == 0)
       pHit.x = 1e-5f*radius;
     phi = std::atan2(pHit.y, pHit.x);

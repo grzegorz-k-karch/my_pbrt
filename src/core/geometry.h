@@ -469,6 +469,11 @@ Dot(const Normal3<T>& n1, const Normal3<T>& n2) {
     return n1.x*n2.x + n1.y*n2.y + n1.z*n2.z;
 }
 
+template <typename T> inline Normal3<T>
+Abs(const Normal3<T>& n) {
+    return Normal3<T>(std::abs(n.x), std::abs(n.y), std::abs(n.z));
+}
+
 template <typename T> inline T
 AbsDot(const Normal3<T>& n, const Vector3<T>& v) {
     return std::abs(n.x*v.x + n.y*v.y + n.z*v.z);
@@ -675,6 +680,29 @@ Bounds3<T>::IntersectP(const Ray& ray, Float* hitt0, Float* hitt1) const {
     if (hitt0) *hitt0 = t0;
     if (hitt1) *hitt1 = t1;
     return true;
+}
+
+inline Point3f OffsetRayOrigin(const Point3f& p, const Vector3f& pError,
+                               const Normal3f& n, const Vector3f& w) {
+
+  Float d = Dot(Abs(n), pError);
+  Vector3f offset = d*Vector3f(n);
+  if (Dot(w, n) < 0) {
+    offset = -offset;
+  }
+  Point3f po = p + offset;
+
+  // <round offset point po away from p>
+  for (int i = 0; i < 3; ++i) {
+    if (offset[i] > 0) {
+      po[i] = NextFloatUp(po[i]);
+    }
+    else if (offset[i] < 0) {
+      po[i] = NextFloatDown(po[i]);
+    }
+  }
+
+  return po;
 }
 
 template <typename T> inline bool
