@@ -4,10 +4,12 @@
 #include "geometry.h"
 #include "medium.h"
 #include "pbrt.h"
+#include "primitive.h"
 
 namespace pbrt {
 
 class Shape;
+class Primitive;
 
 struct Interaction {
 
@@ -63,6 +65,10 @@ public:
     Vector3f dpdu, dpdv;
     Normal3f dndu, dndv;
   } shading;
+
+  const Primitive *primitive = nullptr;
+// TODO BSDF *bsdf = nullptr;
+// TODO  BSSRDF *bssrdf = nullptr;
 };
 
 } // namespace pbrt

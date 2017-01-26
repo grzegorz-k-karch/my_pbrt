@@ -12,6 +12,11 @@ public:
     Spectrum Le(const RayDifferential& ray) const;
 };
 
+
+class AreaLight : public Light {
+
+};
+
 }
 
 #endif//LIGHT_H

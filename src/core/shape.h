@@ -22,7 +22,7 @@ public:
 
   virtual bool Intersect(const Ray& ray, Float* tHit, SurfaceInteraction* isect,
       bool testAlphaTexture = true) const = 0;
-  virtual bool IntersetP(const Ray& ray, bool testAlphaTexture = true) const {
+  virtual bool IntersectP(const Ray& ray, bool testAlphaTexture = true) const {
     Float tHit = ray.tMax;
     SurfaceInteraction isect;
     return Intersect(ray, &tHit, &isect, testAlphaTexture);
