@@ -506,8 +506,6 @@ Normalize(const Normal3<T>& n) {
 
 typedef Normal3<Float> Normal3f;
 
-class Medium;
-
 class Ray {
 public:
 

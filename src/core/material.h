@@ -1,12 +1,11 @@
 #ifndef CORE_MATERIAL_H
 #define CORE_MATERIAL_H
 
+#include "pbrt.h"
+
 namespace pbrt {
 
 enum class TransportMode { Radiance, Importance };
-
-class SurfaceInteraction;
-class MemoryArena;
 
 class Material {
 public:

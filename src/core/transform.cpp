@@ -1,5 +1,6 @@
 #include "transform.h"
 #include "error.h"
+#include "interaction.h"
 
 #include <cstring>
 #include <cmath>
@@ -276,6 +277,15 @@ bool Transform::SwapsHandedness() const {
       m.m[0][1]*(m.m[1][0]*m.m[2][2] - m.m[1][2]*m.m[2][0]) +
       m.m[0][2]*(m.m[1][0]*m.m[2][1] - m.m[1][1]*m.m[2][0]);
   return det < 0;
+}
+
+AnimatedTransform::AnimatedTransform(const Transform* startTransform, Float startTime,
+    const Transform* endTransform, Float endTime)
+: startTransform(startTransform), endTransform(endTransform),
+  startTime(startTime), endTime(endTime),
+  actuallyAnimated(*startTransform != *endTransform) {
+
+  // TODO
 }
 
 } /* namespace pbrt */

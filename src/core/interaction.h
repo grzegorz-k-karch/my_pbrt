@@ -8,9 +8,6 @@
 
 namespace pbrt {
 
-class Shape;
-class Primitive;
-
 struct Interaction {
 
   Interaction() : time(0) {}

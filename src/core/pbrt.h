@@ -10,6 +10,16 @@
 
 namespace pbrt {
 
+class Medium;
+class MediumInterface;
+class SurfaceInteraction;
+class MemoryArena;
+class Shape;
+class Primitive;
+class AnimatedTransform;
+class AreaLight;
+class Material;
+
 #ifdef PBRT_FLOAT_AS_DOUBLE
 typedef double Float;
 #else

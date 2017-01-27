@@ -1,16 +1,15 @@
 #ifndef PRIMITIVE_H
 #define PRIMITIVE_H
 
+#include "pbrt.h"
 #include "geometry.h"
-#include "interaction.h"
-#include "light.h"
 #include "material.h"
+#include "medium.h"
+#include "transform.h"
 
 #include <memory>
 
 namespace pbrt {
-
-class Shape;
 
 class Primitive {
 
@@ -62,9 +61,9 @@ private:
 class TransformedPrimitive : public Primitive {
 
 public:
-  TransformedPrimitive(std::shared_ptr<Primitive>& primitive,
-      const AnimatedTransform& primitiveToWorld)
-: primitive(primitive), primitiveToWorld(primitiveToWorld) {}
+  TransformedPrimitive(std::shared_ptr<Primitive>& _primitive,
+      const AnimatedTransform& _primitiveToWorld)
+: primitive(_primitive), primitiveToWorld(_primitiveToWorld) {}
 private:
   std::shared_ptr<Primitive> primitive;
   const AnimatedTransform primitiveToWorld;

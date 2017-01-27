@@ -7,8 +7,6 @@
 
 namespace pbrt {
 
-class Transform;
-
 class Shape {
 
 public:

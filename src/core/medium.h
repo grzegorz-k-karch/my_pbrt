@@ -3,6 +3,10 @@
 
 namespace pbrt {
 
+class Medium {
+
+};
+
 struct MediumInterface {
 
 };
