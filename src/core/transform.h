@@ -122,6 +122,8 @@ public:
 
 private:
   Matrix4x4 m, mInv;
+  friend class AnimatedTransform;
+  friend struct Quaternion;
 };
 
 template <typename T> inline Point3<T>
@@ -309,7 +311,10 @@ private:
   const Float startTime, endTime;
   const bool actuallyAnimated;
 
-  // TODO
+  Vector3f T[2];
+  Quaternion R[2];
+  Matrix4x4 S[2];
+  bool hasRotation;
 };
 
 } // namespace pbrt

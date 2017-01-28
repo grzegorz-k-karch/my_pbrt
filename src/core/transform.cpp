@@ -1,6 +1,7 @@
 #include "transform.h"
 #include "error.h"
 #include "interaction.h"
+#include "quaternion.h"
 
 #include <cstring>
 #include <cmath>
@@ -285,7 +286,14 @@ AnimatedTransform::AnimatedTransform(const Transform* startTransform, Float star
   startTime(startTime), endTime(endTime),
   actuallyAnimated(*startTransform != *endTransform) {
 
-  // TODO
+  Decompose(startTransform->m, &T[0], &R[0], &S[0]);
+  Decompose(endTransform->m, &T[1], &R[1], &S[1]);
+
+  // TODO <flip R1 if needed to select shortest path>
+
+  hasRotation = Dot(R[0], R[1]) < 0.9995f;
+
+  // TODO <compute terms of motion derivative function>
 }
 
 } /* namespace pbrt */

@@ -19,6 +19,8 @@ class Primitive;
 class AnimatedTransform;
 class AreaLight;
 class Material;
+class Transform;
+class Quaternion;
 
 #ifdef PBRT_FLOAT_AS_DOUBLE
 typedef double Float;

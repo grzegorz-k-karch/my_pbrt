@@ -39,4 +39,24 @@ void GeometricPrimitive::ComputeScatteringFunctions(SurfaceInteraction* isect,
   }
 }
 
+bool TransformedPrimitive::Intersect(const Ray& r, SurfaceInteraction* isect) const {
+
+  // <compute ray after transformation by primitiveToWorld>
+  Transform interpolatedPrimToWorld;
+  // TODO primitiveToWorld.Interpolate(r.time, &interpolatedPrimToWorld);
+  Ray ray = Inverse(interpolatedPrimToWorld)(r);
+
+  if (!primitive->Intersect(ray, isect)) {
+    return false;
+  }
+  r.tMax = ray.tMax;
+
+  // <transform instance's intersection data to world space>
+  if (!interpolatedPrimToWorld.IsIdentity()) {
+    *isect = interpolatedPrimToWorld(*isect);
+  }
+
+  return true;
+}
+
 } // namespace pbrt
