@@ -43,7 +43,7 @@ bool TransformedPrimitive::Intersect(const Ray& r, SurfaceInteraction* isect) co
 
   // <compute ray after transformation by primitiveToWorld>
   Transform interpolatedPrimToWorld;
-  // TODO primitiveToWorld.Interpolate(r.time, &interpolatedPrimToWorld);
+  primitiveToWorld.Interpolate(r.time, &interpolatedPrimToWorld);
   Ray ray = Inverse(interpolatedPrimToWorld)(r);
 
   if (!primitive->Intersect(ray, isect)) {

@@ -3,6 +3,7 @@
 
 #include "pbrt.h"
 #include "geometry.h"
+#include "quaternion.h"
 
 namespace pbrt {
 
@@ -306,6 +307,13 @@ class AnimatedTransform {
 public:
     AnimatedTransform(const Transform* startTransform, Float startTime,
       const Transform* endTransform, Float endTime);
+    void Decompose(const Matrix4x4& m, Vector3f* T, Quaternion* Rquat, Matrix4x4* S);
+    void Interpolate(Float time, Transform* t) const;
+    Ray operator()(const Ray& r) const;
+    RayDifferential operator()(RayDifferential& r) const;
+    Point3f operator()(Float time, const Point3f& p) const;
+    Vector3f operator()(Float time, const Vector3f& v) const;
+    Bounds3f MotionBounds(const Bounds3f& b) const;
 private:
   const Transform *startTransform, *endTransform;
   const Float startTime, endTime;

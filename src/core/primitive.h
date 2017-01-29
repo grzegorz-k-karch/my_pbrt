@@ -65,15 +65,20 @@ public:
       const AnimatedTransform& _primitiveToWorld)
 : primitive(_primitive), primitiveToWorld(_primitiveToWorld) {}
 
-//  TODO virtual Bounds3f WorldBound() const {
-//    return primitiveToWorld.MotionBounds(primitive->WorldBound());
-//  }
+  virtual Bounds3f WorldBound() const {
+    return primitiveToWorld.MotionBounds(primitive->WorldBound());
+  }
 
   virtual bool Intersect(const Ray& ray, SurfaceInteraction* isect) const;
 
 private:
   std::shared_ptr<Primitive> primitive;
   const AnimatedTransform primitiveToWorld;
+};
+
+class Aggregate : public Primitive {
+public:
+
 };
 
 }

@@ -289,11 +289,120 @@ AnimatedTransform::AnimatedTransform(const Transform* startTransform, Float star
   Decompose(startTransform->m, &T[0], &R[0], &S[0]);
   Decompose(endTransform->m, &T[1], &R[1], &S[1]);
 
-  // TODO <flip R1 if needed to select shortest path>
+  // <flip R[1] if needed to select shortest path>
+  if (Dot(R[0], R[1]) < 0) {
+    R[1] = -R[1];
+  }
 
   hasRotation = Dot(R[0], R[1]) < 0.9995f;
 
   // TODO <compute terms of motion derivative function>
+}
+
+void AnimatedTransform::Decompose(const Matrix4x4& m, Vector3f* T,
+    Quaternion* Rquat, Matrix4x4* S) {
+
+  // <extract translation T from transformation matrix>
+  T->x = m.m[0][3];
+  T->y = m.m[1][3];
+  T->z = m.m[2][3];
+
+  // <compute new transformation matrix M without translation>
+  Matrix4x4 M = m;
+  for (int i = 0; i < 3; ++i) {
+    M.m[i][3] = M.m[3][i] = 0.f;
+  }
+  M.m[3][3] = 1.f;
+
+  // <extract rotation R from transformation matrix>
+  Float norm;
+  int count;
+  Matrix4x4 R = M;
+  do {
+    // <compute next matrix Rnext in series>
+    Matrix4x4 Rnext;
+    Matrix4x4 Rit = Inverse(Transpose(R));
+    for (int i = 0; i < 4; ++i) {
+      for (int j = 0; j < 4; ++j) {
+        Rnext.m[i][j] = .5f*(R.m[i][j] + Rit.m[i][j]);
+      }
+    }
+
+    // compute norm of difference between R and Rnext>
+    norm = 0;
+    for (int i = 0; i < 3; ++i) {
+      Float n = std::abs(R.m[i][0] - Rnext.m[i][0]) +
+          std::abs(R.m[i][1] - Rnext.m[i][1]) +
+          std::abs(R.m[i][2] - Rnext.m[i][2]);
+      norm = std::max(norm, n);
+    }
+
+    R = Rnext;
+  } while (++count < 100 && norm > .0001);
+  *Rquat = Quaternion(R);
+
+  // <compute scale S using rotation and original matrix>
+  *S = Matrix4x4::Mul(Inverse(R), M);
+}
+
+void AnimatedTransform::Interpolate(Float time, Transform* t) const {
+
+  // <handle boundary conditions for matrix interpolation>
+  if (!actuallyAnimated || time <= startTime) {
+    *t = *startTransform;
+    return;
+  }
+  if (time >= endTime) {
+    *t = *endTransform;
+    return;
+  }
+
+  Float dt = (time - startTime)/(endTime - startTime);
+
+  // <interpolate translation at dt>
+  Vector3f trans = (1 - dt)*T[0] + dt*T[1];
+
+  // <interpolate rotation at dt>
+  Quaternion rotate = Slerp(dt, R[0], R[1]);
+
+  // <interpolate scale at dt>
+  Matrix4x4 scale;
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      scale.m[i][j] = Lerp(dt, S[0].m[i][j], S[1].m[i][j]);
+    }
+  }
+
+  // <compute interpolated matrix as product of interpolated components>
+  *t = Translate(trans)*rotate.ToTransform()*Transform(scale);
+}
+
+//Ray AnimatedTransform::operator()(const Ray& r) const {
+//
+//}
+//RayDifferential AnimatedTransform::operator()(RayDifferential& r) const {
+//
+//}
+//Point3f AnimatedTransform::operator()(Float time, const Point3f& p) const {
+//
+//}
+//Vector3f AnimatedTransform::operator()(Float time, const Vector3f& v) const {
+//
+//}
+
+Bounds3f AnimatedTransform::MotionBounds(const Bounds3f& b) const {
+  if (!actuallyAnimated) {
+    return (*startTransform)(b);
+  }
+  if (hasRotation == false) {
+    return Union((*startTransform)(b),(*endTransform)(b));
+  }
+  // <return motion bounds accounting for animated rotation>
+  Bounds3f bounds;
+  for (int corner = 0; corner < 8; ++corner) {
+    // TODO 110 bounds = Union(bounds, BoundPointMotion(b.Corner(corner)));
+  }
+  return bounds;
 }
 
 } /* namespace pbrt */
