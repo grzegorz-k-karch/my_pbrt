@@ -21,6 +21,7 @@ class AreaLight;
 class Material;
 class Transform;
 class Quaternion;
+class Primitive;
 
 #ifdef PBRT_FLOAT_AS_DOUBLE
 typedef double Float;
