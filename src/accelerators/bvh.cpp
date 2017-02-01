@@ -78,14 +78,90 @@ BVHBuildNode* BVHAccel::recursiveBuild(MemoryArena& arena,
   (*totalNodes)++;
 
   // <compute bounds of all primitives in BVH node>
+  Bounds3f bounds;
+  for (int i = start; i < end; ++i) {
+    bounds = Union(bounds, primitiveInfo[i].bounds);
+  }
 
   int nPrimitives = end - start;
   if (nPrimitives == 1) {
     // <create leaf BVHBuildNode>
+    int firstPrimOffset = orderedPrims.size();
+    for (int i = start; i < end; ++i) {
+      int primNum = primitiveInfo[i].primitiveNumber;
+      orderedPrims.push_back(primitives[primNum]);
+    }
+    node->InitLeaf(firstPrimOffset, nPrimitives, bounds);
+    return node;
   }
   else {
     // <compute bound of primitive centroids, choose split dimension dim>
+    Bounds3f centroidBounds;
+    for (int i = start; i < end; ++i) {
+      centroidBounds = Union(centroidBounds, primitiveInfo[i].centroid);
+    }
+    int dim = centroidBounds.MaximumExtent();
+
     // <partition primitives into two sets and build children>
+    int mid = (start + end)/2;
+    if (centroidBounds.pMax[dim] == centroidBounds.pMin[dim]) {
+      // <create leaf BVHBuildNode>
+      int firstPrimOffset = orderedPrims.size();
+      for (int i = start; i < end; ++i) {
+        int primNum = primitiveInfo[i].primitiveNumber;
+        orderedPrims.push_back(primitives[primNum]);
+      }
+      node->InitLeaf(firstPrimOffset, nPrimitives, bounds);
+      return node;
+    }
+    else {
+      // <partition primitives based on splitMethod>
+      switch(splitMethod) {
+      case SplitMethod::Middle:{
+        // <partition primitives through node's midpoint>
+        Float pmid = (centroidBounds.pMin[dim] + centroidBounds.pMax[dim])/2;
+        BVHPrimitiveInfo *midPtr = std::partition(&primitiveInfo[start], &primitiveInfo[end-1]+1,
+            [dim, pmid](const BVHPrimitiveInfo& pi) {
+          return pi.centroid[dim] < pmid;
+        });
+        mid = midPtr - &primitiveInfo[0];
+        if (mid != start && mid != end) {
+          break;
+        }
+      }
+      case SplitMethod::EqualCounts: {
+        // <partition primitives into equally-sized subsets>
+        mid = (start + end)/2;
+        std::nth_element(&primitiveInfo[start], &primitiveInfo[mid], &primitiveInfo[end-1]+1,
+            [dim](const BVHPrimitiveInfo& a, const BVHPrimitiveInfo& b) {
+          return a.centroid[dim] < b.centroid[dim];
+        });
+        break;
+      }
+      case SplitMethod::SAH:
+      default: {
+        // <partition primitives using approximate SAH>
+        if (nPrimitives <= 4) {
+          // <partition primitives into equally sized subsets>
+          mid = (start + end)/2;
+          std::nth_element(&primitiveInfo[start], &primitiveInfo[mid], &primitiveInfo[end-1]+1,
+              [dim](const BVHPrimitiveInfo& a, const BVHPrimitiveInfo& b) {
+            return a.centroid[dim] < b.centroid[dim];
+          });
+        }
+        else {
+          // <allocate BucketInfo for SAH partition buckets>
+          // <initialize BucketInfo for SAH partition buckets>
+          // <compute costs for splitting after each bucket>
+          // <find bucket to split at that minimizes SAH metric>
+          // <either create leaf or split primitives at selected SAH bucket>
+        }
+        }
+      }
+      node->InitInterior(dim,
+          recursiveBuild(arena, primitiveInfo, start, mid, totalNodes, orderedPrims),
+          recursiveBuild(arena, primitiveInfo, mid, end, totalNodes, orderedPrims));
+    }
   }
   return node;
 }
