@@ -38,11 +38,6 @@ struct BVHBuildNode {
   int splitAxis, firstPrimOffset, nPrimitives;
 };
 
-struct MortonPrimitive {
-  int primitiveIndex;
-  uint32_t mortonCode;
-};
-
 BVHAccel::BVHAccel(const std::vector<std::shared_ptr<Primitive>>& p,
     int maxPrimsInNode, SplitMethod splitMethod)
 : maxPrimsInNode(std::min(255,maxPrimsInNode)), primitives(p), splitMethod(splitMethod) {
@@ -242,6 +237,59 @@ inline uint32_t EncodeMorton3(const Vector3f& v) {
   return (LeftShift3(v.z) << 2) | (LeftShift3(v.y) << 1) | (LeftShift3(v.x));
 }
 
+struct MortonPrimitive {
+  int primitiveIndex;
+  uint32_t mortonCode;
+};
+
+struct LBVHTreelet {
+  int startIndex, nPrimitives;
+  BVHBuildNode *buildNodes;
+};
+
+static void RadixSort(std::vector<MortonPrimitive>* v) {
+
+  std::vector<MortonPrimitive> tempVector(v->size());
+  constexpr int bitsPerPass = 6;
+  constexpr int nBits = 30;
+  constexpr int nPasses = nBits/bitsPerPass;
+  for (int pass = 0; pass < nPasses; ++pass) {
+    // <perform one pass of radix sort, sorting bitsPerPass bits>
+    int lowBit = pass*bitsPerPass;
+
+    // <set in and out vector pointers for radix sort pass>
+    std::vector<MortonPrimitive> &in = (pass & 1) ? tempVector : *v;
+    std::vector<MortonPrimitive> &out = (pass & 1) ? *v : tempVector;
+
+
+    // <count number of zero bits in array for current radix sort bit>
+    constexpr int nBuckets = 1 << bitsPerPass;
+    int bucketCount[nBuckets] = {0};
+    constexpr int bitMask = (1 << bitsPerPass) - 1;
+    for (const MortonPrimitive &mp : in) {
+      int bucket = (mp.mortonCode >> lowBit) & bitMask;
+      ++bucketCount[bucket];
+    }
+
+    // <compute starting index in output array for each bucket>
+    int outIndex[nBuckets];
+    outIndex[0] = 0;
+    for (int i = 1; i < nBuckets; ++i) {
+      outIndex[i] = outIndex[i-1] + bucketCount[i-1];
+    }
+
+    // <store sorted values in output array>
+    for (const MortonPrimitive &mp : in) {
+      int bucket = (mp.mortonCode >> lowBit) & bitMask;
+      out[outIndex[bucket]++]= mp;
+    }
+  }
+  // <copy final result from tempVector, if needed>
+  if (nPasses & 1) {
+    std::swap(*v, tempVector);
+  }
+}
+
 BVHBuildNode* BVHAccel::HLBVHBuild(MemoryArena& arena,
     std::vector<BVHPrimitiveInfo>& primitiveInfo, int* totalNodes,
     std::vector<std::shared_ptr<Primitive>>& orderedPrims) const {
@@ -266,7 +314,27 @@ BVHBuildNode* BVHAccel::HLBVHBuild(MemoryArena& arena,
 
   // <radix sort primitive Morton indices>
   RadixSort(&mortonPrims);
+
   // <create LBVH treelets at bottom of BVH>
+  // <find intervals of primitives for each treelet>
+  std::vector<LBVHTreelet> treeletsToBuild;
+  for (int start = 0, end = 1; end <= (int)mortonPrims.size(); ++end) {
+    uint32_t mask = 0b00111111111111000000000000000000;
+    if (end == (int)mortonPrims.size() || (
+        (mortonPrims[start].mortonCode & mask) !=
+            (mortonPrims[end].mortonCode & mask))) {
+      // <add entry to treeletsToBuild for this treelet>
+      int nPrimitives = end - start;
+      int maxBVHNodes = 2*nPrimitives;
+      BVHBuildNode *nodes = arena.Alloc<BVHBuildNode>(maxBVHNodes, false);
+      treeletsToBuild.push_back({start, nPrimitives, nodes});
+
+      start = end;
+    }
+  }
+  // <create LBVHs for treelets in parallel>
+
+
   // <create and return SAH BVH from LBVH treelets>
 }
 
