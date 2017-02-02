@@ -22,6 +22,10 @@ public:
       std::vector<BVHPrimitiveInfo>& primitiveInfo, int start, int end, int* totalNodes,
       std::vector<std::shared_ptr<Primitive>>& orderedPrims);
 
+  BVHBuildNode* HLBVHBuild(MemoryArena& arena,
+      std::vector<BVHPrimitiveInfo>& primitiveInfo, int* totalNodes,
+      std::vector<std::shared_ptr<Primitive>>& orderedPrims) const;
+
 private:
   const int maxPrimsInNode;
   const SplitMethod splitMethod;

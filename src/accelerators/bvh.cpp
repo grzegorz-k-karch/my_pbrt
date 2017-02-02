@@ -1,6 +1,7 @@
 #include "bvh.h"
 #include "primitive.h"
 #include "memory.h"
+#include "parallel.h"
 
 #include <algorithm>
 
@@ -35,6 +36,11 @@ struct BVHBuildNode {
   Bounds3f bounds;
   BVHBuildNode *children[2];
   int splitAxis, firstPrimOffset, nPrimitives;
+};
+
+struct MortonPrimitive {
+  int primitiveIndex;
+  uint32_t mortonCode;
 };
 
 BVHAccel::BVHAccel(const std::vector<std::shared_ptr<Primitive>>& p,
@@ -222,6 +228,46 @@ BVHBuildNode* BVHAccel::recursiveBuild(MemoryArena& arena,
     }
   }
   return node;
+}
+
+inline uint32_t LeftShift3(uint32_t x) {
+  if (x == (1 << 10)) --x;
+  x = (x | (x << 16)) & 0b00000011000000000000000011111111;
+  x = (x | (x <<  8)) & 0b00000011000000001111000000001111;
+  x = (x | (x <<  4)) & 0b00000011000011000011000011000011;
+  x = (x | (x <<  2)) & 0b00001001001001001001001001001001;
+}
+
+inline uint32_t EncodeMorton3(const Vector3f& v) {
+  return (LeftShift3(v.z) << 2) | (LeftShift3(v.y) << 1) | (LeftShift3(v.x));
+}
+
+BVHBuildNode* BVHAccel::HLBVHBuild(MemoryArena& arena,
+    std::vector<BVHPrimitiveInfo>& primitiveInfo, int* totalNodes,
+    std::vector<std::shared_ptr<Primitive>>& orderedPrims) const {
+
+  // <compute bounding box of all primitive centroids>
+  Bounds3f bounds;
+  for (const BVHPrimitiveInfo &pi : primitiveInfo) {
+    bounds = Union(bounds, pi.centroid);
+  }
+
+  // <compute Morton indices of primitives>
+  std::vector<MortonPrimitive> mortonPrims(primitiveInfo.size());
+  ParallelFor2D(
+      [&](int i) {
+    // <initilize mortonPrims[i] for ith primitive>
+    constexpr int mortonBits = 10;
+    constexpr int mortonScale = 1 << mortonBits;
+    mortonPrims[i].primitiveIndex = primitiveInfo[i].primitiveNumber;
+    Vector3f centroidOffset = bounds.Offset(primitiveInfo[i].centroid);
+    mortonPrims[i].mortonCode = EncodeMorton3(centroidOffset*mortonScale);
+  }, primitiveInfo.size(), 512);
+
+  // <radix sort primitive Morton indices>
+  RadixSort(&mortonPrims);
+  // <create LBVH treelets at bottom of BVH>
+  // <create and return SAH BVH from LBVH treelets>
 }
 
 } // namespace pbrt
