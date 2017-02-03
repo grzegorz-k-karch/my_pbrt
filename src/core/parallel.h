@@ -7,7 +7,7 @@
 namespace pbrt {
 
 void ParallelFor2D(std::function<void(Point2i)> func, const Point2i& count);
-void ParallelFor2D(const std::function<void(int)> &func, int count, int chunkSize);
+void ParallelFor(const std::function<void(int64_t)> &func, int64_t count, int chunkSize = 1);
 
 }
 

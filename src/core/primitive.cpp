@@ -59,4 +59,20 @@ bool TransformedPrimitive::Intersect(const Ray& r, SurfaceInteraction* isect) co
   return true;
 }
 
+const AreaLight* Aggregate::GetAreaLight() const {
+  // TODO
+  return nullptr;
+}
+
+const Material* Aggregate::GetMaterial() const {
+  // TODO
+  return nullptr;
+}
+
+void Aggregate::ComputeScatteringFunctions(SurfaceInteraction* isect,
+    MemoryArena& arena, TransportMode mode, bool allowMultipleLobes) const {
+  // TODO
+}
+
+
 } // namespace pbrt

@@ -78,6 +78,12 @@ private:
 
 class Aggregate : public Primitive {
 public:
+  virtual const AreaLight* GetAreaLight() const;
+
+  virtual const Material* GetMaterial() const;
+
+  virtual void ComputeScatteringFunctions(SurfaceInteraction* isect,
+      MemoryArena& arena, TransportMode mode, bool allowMultipleLobes) const;
 
 };
 
