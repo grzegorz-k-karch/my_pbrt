@@ -658,7 +658,19 @@ typedef Bounds2<float> Bounds2f;
 typedef Bounds3<int> Bounds3i;
 typedef Bounds3<float> Bounds3f;
 
-template <typename T> inline bool
+template<typename T>
+  inline const Point3<T>& Bounds3<T>::operator[](int i) const {
+  // TODO assert
+  return (i == 0) ? pMin : pMax;
+ }
+
+template<typename T>
+  inline Point3<T>& Bounds3<T>::operator[](int i) {
+  // TODO assert
+  return (i == 0) ? pMin : pMax;
+ }
+
+ template <typename T> inline bool
 Bounds3<T>::IntersectP(const Ray& ray, Float* hitt0, Float* hitt1) const {
 
     Float t0 = 0, t1 = ray.tMax;

@@ -2,6 +2,7 @@
 #include "primitive.h"
 #include "memory.h"
 #include "parallel.h"
+#include "geometry.h"
 
 #include <algorithm>
 #include <atomic>
@@ -640,5 +641,10 @@ BVHBuildNode* BVHAccel::buildUpperSAH(MemoryArena& arena, std::vector<BVHBuildNo
   return node;
 }
 
+  Bounds3f BVHAccel::WorldBound() const {
+    return nodes ? nodes[0].bounds : Bounds3f();
+  }
 
+  BVHAccel::~BVHAccel() { FreeAligned(nodes); }
+  
 } // namespace pbrt
