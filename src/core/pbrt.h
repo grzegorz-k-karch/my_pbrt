@@ -23,16 +23,16 @@ class Ray;
 class Shape;
 class SurfaceInteraction;
 class Transform;
+class RGBSpectrum;
+class SampledSpectrum;
+typedef RGBSpectrum Spectrum;
+//typedef SampledSpectrum Spectrum;
 
 #ifdef PBRT_FLOAT_AS_DOUBLE
 typedef double Float;
 #else
 typedef float Float;
 #endif//PBRT_FLOAT_AS_DOUBLE
-
-typedef Float RGBSpectrum; // TODO
-
-typedef RGBSpectrum Spectrum;
 
 #define ALLOCA(TYPE, COUNT) (TYPE*)alloca((COUNT)*sizeof(TYPE))
 
