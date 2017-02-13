@@ -13,6 +13,7 @@ namespace pbrt {
 class Aggregate;
 class AnimatedTransform;
 class AreaLight;
+class Film;
 class Material;
 class Medium;
 class MediumInterface;

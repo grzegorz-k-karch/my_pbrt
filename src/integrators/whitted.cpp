@@ -1,5 +1,6 @@
 #include "whitted.h"
 #include "interaction.h"
+#include "spectrum.h"
 
 namespace pbrt {
 

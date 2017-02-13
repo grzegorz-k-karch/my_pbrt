@@ -1,12 +1,15 @@
 all: pbrt
 
-pbrt: bvh.o spectrum.o quaternion.o material.o primitive.o pbrt.o sphere.o efloat.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o whitted.o light.o transform.o error.o interaction.o
+pbrt: bvh.o camera.o spectrum.o quaternion.o material.o primitive.o pbrt.o sphere.o efloat.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o whitted.o light.o transform.o error.o interaction.o
 	g++ $^ -o $@
 
 pbrt.o: main/pbrt.cpp
 	g++ -std=c++11 -c $^
 
 quaternion.o: core/quaternion.cpp core/quaternion.h
+	g++ -std=c++11 -c $<
+
+camera.o: core/camera.cpp core/camera.h
 	g++ -std=c++11 -c $<
 
 spectrum.o: core/spectrum.cpp core/spectrum.h

@@ -1,4 +1,5 @@
 #include "light.h"
+#include "spectrum.h"
 
 namespace pbrt {
 

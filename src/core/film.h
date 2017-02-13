@@ -10,7 +10,7 @@
 namespace pbrt {
 
 struct FilmTilePixel {
-	Spectrum contribSum = 0.0f;
+//	Spectrum contribSum = 0.0f; // TODO
 	Float filterWeightSum = 0.0f;
 };
 

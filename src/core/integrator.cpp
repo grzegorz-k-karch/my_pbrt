@@ -5,6 +5,7 @@
 #include "sampler.h"
 #include "memory.h"
 #include "camera.h"
+#include "spectrum.h"
 
 namespace pbrt {
 
