@@ -12,6 +12,9 @@ quaternion.o: core/quaternion.cpp core/quaternion.h
 camera.o: core/camera.cpp core/camera.h
 	g++ -std=c++11 -c $<
 
+orthographic.o: cameras/orthographic.cpp cameras/orthographic.h
+	g++ -std=c++11 -c $< -Icore
+
 spectrum.o: core/spectrum.cpp core/spectrum.h
 	g++ -std=c++11 -c $<
 

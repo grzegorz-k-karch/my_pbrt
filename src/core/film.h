@@ -37,6 +37,8 @@ class Film {
 public:
 	Bounds2i GetSampleBounds() const;
 	std::unique_ptr<FilmTile> GetFilmTile(const Bounds2i& sampleBounds);
+
+	const Point2i fullResolution;
 	Bounds2i croppedPixelBounds; // <here
 };
 
