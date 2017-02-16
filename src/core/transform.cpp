@@ -216,6 +216,18 @@ Transform Orthographic(Float zNear, Float zFar) {
   return Scale(1, 1, 1/(zFar - zNear))*Translate(Vector3f(0, 0, -zNear));
 }
 
+Transform Perspective(Float fov, Float zNear, Float zFar) {
+  // <perform projective divide for perspective projection>
+  Matrix4x4 persp(1, 0, 0, 0,
+                  0, 1, 0, 0,
+                  0, 0, zFar/(zFar-zNear), -zFar*zNear/(zFar-zNear),
+                  0, 0, 1, 0);
+
+  // <scale canonical perspective view to specified field of view>
+  Float invTanAng = 1/std::tan(Radians(fov)/2);
+
+  return Scale(invTanAng, invTanAng, 1)*Transform(persp);
+}
 Bounds3f Transform::operator()(const Bounds3f& b) const {
   const Transform &M = *this;
   Point3f p0 = M(Point3f(b.pMin.x, b.pMin.y, b.pMin.z));

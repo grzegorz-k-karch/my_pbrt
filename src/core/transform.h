@@ -303,6 +303,7 @@ Transform RotateZ(Float theta);
 Transform Rotate(Float theta, const Vector3f& axis);
 Transform LookAt(const Point3f& pos, const Point3f& look, const Vector3f& up);
 Transform Orthographic(Float zNear, Float zFar);
+Transform Perspective(Float fov, Float zNear, Float zFar);
 
 class AnimatedTransform {
 public:

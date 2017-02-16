@@ -54,7 +54,10 @@ static constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon() * 
 
 const Float ShadowEpsilon = 0.0001f;
 
-static constexpr Float Pi = 3.14159265358979323846;
+static constexpr Float Pi =      3.14159265358979323846;
+static constexpr Float PiOver2 = 1.57079632679489655800;
+static constexpr Float PiOver4 = 0.78539816339744827900;
+
 
 
 // <global inline functions>

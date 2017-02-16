@@ -39,7 +39,8 @@ public:
   cameraToScreen(cameraToScreen) {
 
     // <initialize depth of field parameters>
-
+    lensRadius = lensr;
+    focalDistance = focald;
 
     // <compute projective camera transformations>
     //  <compute projective camera screen transformations>
@@ -55,6 +56,7 @@ public:
 protected:
   Transform cameraToScreen, rasterToCamera;
   Transform screenToRaster, rasterToScreen;
+  Float lensRadius, focalDistance;
 };
 
 
