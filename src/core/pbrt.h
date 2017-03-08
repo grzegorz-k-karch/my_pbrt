@@ -13,6 +13,7 @@ namespace pbrt {
 class Aggregate;
 class AnimatedTransform;
 class AreaLight;
+class CameraSample;
 class Film;
 class Material;
 class Medium;
@@ -25,6 +26,7 @@ class Shape;
 class SurfaceInteraction;
 class Transform;
 class RGBSpectrum;
+class RNG;
 class SampledSpectrum;
 typedef RGBSpectrum Spectrum;
 //typedef SampledSpectrum Spectrum;
