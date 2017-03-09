@@ -93,5 +93,63 @@ Point2f PixelSampler::Get2D() {
   }
 }
 
+void GlobalSampler::StartPixel(const Point2i& p) {
+  Sampler::StartPixel(p);
+  dimension = 0;
+  intervalSampleIndex = GetIndexForSample(0);
+
+  // <compute arrayEndDim for dimensions used for array samples>
+  arrayEndDim = arrayStartDim + sampleArray1D.size() + 2*sampleArray2D.size();
+
+  // <compute 1D array samples for GlobalSampler>
+  for (size_t i = 0; i < samples1DArraySizes.size(); ++i) {
+    int nSamples = samples1DArraySizes[i]*samplesPerPixel;
+    for (int j = 0; j < nSamples; ++j) {
+      int64_t index = GetIndexForSample(j);
+      sampleArray1D[i][j] = SampleDimension(index, arrayStartDim + i);
+    }
+  }
+
+  // <compute 2D array samples for GlobalSampler>
+  int dim = arrayStartDim + samples1DArraySizes.size();
+  for (size_t i = 0; i < samples2DArraySizes.size(); ++i) {
+    int nSamples = samples2DArraySizes[i]*samplesPerPixel;
+    for (int j = 0; j < nSamples; ++j) {
+      int64_t index = GetIndexForSample(j);
+      sampleArray2D[i][j].x = SampleDimension(index, dim);
+      sampleArray2D[i][j].y = SampleDimension(index, dim + 1);
+    }
+    dim += 2;
+  }
+}
+
+bool GlobalSampler::StartNextSample() {
+  dimension = 0;
+  intervalSampleIndex = GetIndexForSample(currentPixelSampleIndex + 1);
+  return Sampler::StartNextSample();
+}
+
+bool GlobalSampler::SetSampleNumber(int64_t sampleNum) {
+  dimension = 0;
+  intervalSampleIndex = GetIndexForSample(sampleNum);
+  return Sampler::SetSampleNumber(sampleNum);
+}
+Float GlobalSampler::Get1D() {
+  if (dimension >= arrayStartDim && dimension < arrayEndDim) {
+    dimension = arrayEndDim;
+  }
+  return SampleDimension(intervalSampleIndex, dimension++);
+}
+
+Point2f GlobalSampler::Get2D() {
+  if (dimension + 1 >= arrayStartDim && dimension < arrayEndDim) {
+    dimension = arrayEndDim;
+  }
+
+  Point2f p(SampleDimension(intervalSampleIndex, dimension),
+      SampleDimension(intervalSampleIndex, dimension+1));
+  dimension += 2;
+  return p;
+}
 
 }

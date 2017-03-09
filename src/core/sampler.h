@@ -70,6 +70,26 @@ protected:
   RNG rng;
 };
 
+class GlobalSampler : public Sampler {
+public:
+  GlobalSampler(int64_t samplesPerPixel) : Sampler(samplesPerPixel) {}
+
+  virtual int64_t GetIndexForSample(int64_t sampleNum) const = 0;
+  virtual Float SampleDimension(int64_t index, int dimension) const = 0;
+
+  virtual void StartPixel(const Point2i& p) override;
+  virtual bool StartNextSample() override;
+  virtual bool SetSampleNumber(int64_t sampleNum) override;
+  virtual Float Get1D() override;
+  virtual Point2f Get2D() override;
+
+private:
+  int dimension;
+  int64_t intervalSampleIndex;
+  static const int arrayStartDim = 5;
+  int arrayEndDim;
+};
+
 }
 
 #endif//SAMPLER_H
