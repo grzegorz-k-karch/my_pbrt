@@ -246,6 +246,10 @@ public:
         return Vector2<T>(x - p.x, y - p.y);
     }
 
+    Point2<T> operator-(const Vector2<T>& v) const {
+        return Point2<T>(x - v.x, y - v.y);
+    }
+
     Point2<T> operator*(T s) const {
       return Point2<T>(x*s, y*s);
     }

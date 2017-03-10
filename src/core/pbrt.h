@@ -20,6 +20,7 @@ class Medium;
 class MediumInterface;
 class MemoryArena;
 class Primitive;
+class PixelSampler;
 class Quaternion;
 class Ray;
 class Shape;
