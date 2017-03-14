@@ -1,6 +1,6 @@
 all: pbrt
 
-pbrt: bvh.o stratified.o camera.o spectrum.o quaternion.o material.o primitive.o pbrt.o sphere.o efloat.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o sampling.o whitted.o light.o transform.o error.o interaction.o
+pbrt: bvh.o boxFilter.o triangleFilter.o gaussianFilter.o sincFilter.o filter.o stratified.o camera.o spectrum.o quaternion.o material.o primitive.o pbrt.o sphere.o efloat.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o sampling.o whitted.o light.o transform.o error.o interaction.o
 	g++ $^ -o $@
 
 pbrt.o: main/pbrt.cpp
@@ -9,7 +9,19 @@ pbrt.o: main/pbrt.cpp
 quaternion.o: core/quaternion.cpp core/quaternion.h
 	g++ -std=c++11 -c $<
 
-sampling.o: core/sampling.cpp core/sampling.h
+boxFilter.o: filters/box.cpp filters/box.h
+	g++ -std=c++11 -c $< -Icore -o boxFilter.o
+
+triangleFilter.o: filters/triangle.cpp filters/triangle.h
+	g++ -std=c++11 -c $< -Icore -o triangleFilter.o
+
+gaussianFilter.o: filters/gaussian.cpp filters/gaussian.h
+	g++ -std=c++11 -c $< -Icore -o gaussianFilter.o
+
+sincFilter.o: filters/sinc.cpp filters/sinc.h
+	g++ -std=c++11 -c $< -Icore -o sincFilter.o
+
+filter.o: core/filter.cpp core/filter.h
 	g++ -std=c++11 -c $<
 
 stratified.o: samplers/stratified.cpp samplers/stratified.h
