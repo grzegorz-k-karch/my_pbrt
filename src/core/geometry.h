@@ -242,6 +242,10 @@ public:
         return Point2<T>(x + p.x, y + p.y);
     }
 
+    Point2<T> operator+(const Vector2<T>& v) const {
+        return Point2<T>(x + v.x, y + v.y);
+    }
+
     Vector2<T> operator-(const Point2<T>& p) const {
         return Vector2<T>(x - p.x, y - p.y);
     }
@@ -265,8 +269,28 @@ public:
     T x, y;
 };
 
-template <typename T> inline Point2<T>
-operator*(T s, const Point2<T>& p) { return p*s; }
+template <typename T> inline
+Point2<T> operator*(T s, const Point2<T>& p) { return p*s; }
+
+template <typename T> inline
+Point2<T> Floor(const Point2<T>& p) {
+    return Point2<T>(std::floor(p.x), std::floor(p.y));
+}
+
+template <typename T> inline
+Point2<T> Ceil(const Point2<T>& p) {
+    return Point2<T>(std::ceil(p.x), std::ceil(p.y));
+}
+
+template <typename T> inline
+Point2<T> Min(const Point2<T>& p1, const Point2<T>& p2) {
+    return Point2<T>(std::min(p1.x, p2.x), std::min(p1.y, p2.y));
+}
+
+template <typename T> inline
+Point2<T> Max(const Point2<T>& p1, const Point2<T>& p2) {
+    return Point2<T>(std::max(p1.x, p2.x), std::max(p1.y, p2.y));
+}
 
 template <typename T> class Point3 {
 
@@ -365,13 +389,13 @@ Lerp(Float t, const Point3<T>& p0, const Point3<T>& p1) {
     return (1 - t)*p0 + t*p1;
 }
 
-template <typename T> inline Point3<T>
-Min(const Point3<T>& p1, const Point3<T>& p2) {
+template <typename T> inline
+Point3<T> Min(const Point3<T>& p1, const Point3<T>& p2) {
     return Point3<T>(std::min(p1.x, p2.x), std::min(p1.y, p2.y), std::min(p1.z, p2.z));
 }
 
-template <typename T> inline Point3<T>
-Max(const Point3<T>& p1, const Point3<T>& p2) {
+template <typename T> inline
+Point3<T> Max(const Point3<T>& p1, const Point3<T>& p2) {
     return Point3<T>(std::max(p1.x, p2.x), std::max(p1.y, p2.y), std::max(p1.z, p2.z));
 }
 
@@ -805,6 +829,12 @@ Inside(const Point3<T>& p, Bounds3<T>& b) {
     return (p.x >= b.pMin.x && p.x <= b.pMax.x &&
             p.y >= b.pMin.y && p.y <= b.pMax.y &&
             p.z >= b.pMin.z && p.z <= b.pMax.z);
+}
+
+template <typename T> bool
+InsideExclusive(const Point2<T>& p, Bounds2<T>& b) {
+    return (p.x >= b.pMin.x && p.x < b.pMax.x &&
+            p.y >= b.pMin.y && p.y < b.pMax.y);
 }
 
 template <typename T> bool
