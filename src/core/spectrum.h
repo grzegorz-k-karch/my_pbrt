@@ -70,6 +70,20 @@ public:
     }
     return ret;
   }
+  CoefficientSpectrum operator/(Float a) const {
+    CoefficientSpectrum ret = *this;
+    for (int i = 0; i < nSpectralSamples; ++i) {
+      ret.c[i] /= a;
+    }
+    return ret;
+  }
+  CoefficientSpectrum operator/(const CoefficientSpectrum& s) const {
+    CoefficientSpectrum ret = *this;
+    for (int i = 0; i < nSpectralSamples; ++i) {
+      ret.c[i] /= s.c[i];
+    }
+    return ret;
+  }
 
   CoefficientSpectrum operator-() const {
     CoefficientSpectrum ret = *this;
@@ -186,6 +200,11 @@ inline Spectrum Lerp(Float t, const Spectrum& s1, const Spectrum& s2) {
   return (1 - t)*s1 + t*s2;
 }
 
+inline void XYZToRGB(const Float xyz[3], Float rgb[3]) {
+  rgb[0] =  3.240479f*xyz[0] - 1.537150f*xyz[1] - 0.498535f*xyz[2];
+  rgb[1] = -0.969256f*xyz[0] + 1.875991f*xyz[1] + 0.041556f*xyz[2];
+  rgb[2] =  0.055648f*xyz[0] - 0.204043f*xyz[1] + 1.057311f*xyz[2];
+}
 
 } // namespace pbrt
 

@@ -98,5 +98,45 @@ void Film::AddSplat(const Point2f& p, const Spectrum& v) {
   }
 }
 
+void Film::WriteImage(Float splatScale) {
+
+  // <convert image to RGB and compute final pixel values>
+  std::unique_ptr<Float[]> rgb(new Float[3*croppedPixelBounds.Area()]);
+  int offset = 0;
+
+  for (Point2i p : croppedPixelBounds) {
+    // <convert pixel XYZ color to RGB>
+    Pixel &pixel = GetPixel(p);
+    XYZToRGB(pixel.xyz, &rgb[3*offset]);
+
+    // <normalize pixel with weight sum>
+    Float filterWeightSum = pixel.filterWeigthSum;
+    if (filterWeightSum != 0) {
+      Float invWt = (Float)1/filterWeightSum;
+      rgb[3*offset  ] = std::max((Float)0, rgb[3*offset  ]*invWt);
+      rgb[3*offset+1] = std::max((Float)0, rgb[3*offset+1]*invWt);
+      rgb[3*offset+2] = std::max((Float)0, rgb[3*offset+2]*invWt);
+    }
+
+    // <add splat value at pixel>
+    Float splatRGB[3];
+    Float splatXYZ[3] = {pixel.splatXYZ[0], pixel.splatXYZ[1], pixel.splatXYZ[2]};
+    XYZToRGB(splatXYZ, splatRGB);
+    rgb[3*offset  ] += splatScale*splatRGB[0];
+    rgb[3*offset+1] += splatScale*splatRGB[1];
+    rgb[3*offset+2] += splatScale*splatRGB[2];
+
+    // <scale pixel value by scale>
+    rgb[3*offset  ] *= scale;
+    rgb[3*offset+1] *= scale;
+    rgb[3*offset+2] *= scale;
+
+    ++offset;
+  }
+
+  // <write RGB image>
+  // TODO ::WriteImage(filename, &rgb[0], croppedPixelBounds, fullResolution);
+}
+
 }
 

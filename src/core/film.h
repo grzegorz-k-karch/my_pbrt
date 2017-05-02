@@ -92,6 +92,8 @@ public:
 	void SetImage(const Spectrum* img) const;
 	void AddSplat(const Point2f& p, const Spectrum& v);
 
+	void WriteImage(Float splatScale);
+
 	const Point2i fullResolution;
 	const Float diagonal;
 	std::unique_ptr<Filter> filter;

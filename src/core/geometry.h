@@ -258,6 +258,13 @@ public:
       return Point2<T>(x*s, y*s);
     }
 
+    bool operator==(const Point2<T>& p) const {
+      return x == p.x && y == p.y;
+    }
+
+    bool operator!=(const Point2<T>& p) const {
+      return x != p.x || y != p.y;
+    }
     explicit Point2(const Point3<T>& p) : x(p.x), y(p.y) {
         Assert(!HasNaNs());
     }
@@ -686,8 +693,52 @@ typedef Bounds2<float> Bounds2f;
 typedef Bounds3<int> Bounds3i;
 typedef Bounds3<float> Bounds3f;
 
-template<typename T>
-  inline const Point3<T>& Bounds3<T>::operator[](int i) const {
+class Bounds2iIterator : public std::forward_iterator_tag {
+public:
+  Bounds2iIterator(const Bounds2i& b, const Point2i& pt)
+: p(pt), bounds(&b) {}
+  Bounds2iIterator operator++() {
+    advance();
+    return *this;
+  }
+  Bounds2iIterator operator++(int) {
+    Bounds2iIterator old = *this;
+    advance();
+    return old;
+  }
+  bool operator==(const Bounds2iIterator& bi) const {
+    return p == bi.p && bounds == bi.bounds;
+  }
+  bool operator!=(const Bounds2iIterator& bi) const {
+    return p != bi.p || bounds != bi.bounds;
+  }
+  Point2i operator*() const { return p; }
+private:
+  void advance() {
+    ++p.x;
+    if (p.x == bounds->pMax.x) {
+      p.x = bounds->pMin.x;
+      ++p.y;
+    }
+  }
+  Point2i p;
+  const Bounds2i *bounds;
+};
+
+inline Bounds2iIterator begin(const Bounds2i& b) {
+  return Bounds2iIterator(b, b.pMin);
+}
+
+inline Bounds2iIterator end(const Bounds2i& b) {
+  Point2i pEnd(b.pMin.x, b.pMax.y);
+  if (b.pMin.x >= b.pMax.x || b.pMin.y >= b.pMax.y) {
+    pEnd = b.pMin;
+  }
+  return Bounds2iIterator(b, pEnd);
+}
+
+template<typename T> inline const
+Point3<T>& Bounds3<T>::operator[](int i) const {
   // TODO assert
   return (i == 0) ? pMin : pMax;
  }
