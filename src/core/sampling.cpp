@@ -67,4 +67,16 @@ void LatinHypercube(Float* samples, int nSamples, int nDim, RNG& rng) {
     }
   }
 }
+
+Vector3f UniformSampleHemisphere(const Point2f& sample) {
+  Float z = 1 - 2*sample[0];
+  Float r = std::sqrt(std::max((Float)0, (Float)1 - z*z));
+  Float phi = 2*Pi*sample[1];
+  return Vector3f(r*std::cos(phi), r*std::sin(phi), z);
+}
+
+Float UniformHemispherePdf() {
+  return Inv2Pi;
+}
+
 } // namespace pbrt

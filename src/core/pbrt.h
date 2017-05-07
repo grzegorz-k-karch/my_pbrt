@@ -61,6 +61,7 @@ const Float ShadowEpsilon = 0.0001f;
 
 static constexpr Float Pi =      3.14159265358979323846;
 static constexpr Float InvPi =   0.31830988618379067154;
+static constexpr Float Inv2Pi =  0.15915494309189533577;
 static constexpr Float PiOver2 = 1.57079632679489655800;
 static constexpr Float PiOver4 = 0.78539816339744827900;
 
