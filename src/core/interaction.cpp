@@ -45,4 +45,22 @@ void SurfaceInteraction::SetShadingGeometry(const Vector3f& dpdus, const Vector3
 
 }
 
+void SurfaceInteraction::ComputeScatteringFunctions(const RayDifferential& ray,
+    MemoryArena& arena, bool allowMultipleLobs, TransportMode mode) {
+
+  ComputeDifferentials(ray);
+  primitive->ComputeScatteringFunctions(this, arena, mode, allowMultipleLobs);
+}
+
+void SurfaceInteraction::ComputeDifferentials(const RayDifferential& ray) const {
+
+  if (ray.hasDifferentials) {
+    // <estimate screen space change in p and (u,v)>
+  }
+  else {
+    dudx = dvdx = 0;
+    dudy = dvdy = 0;
+    dpdx = dpdy = Vector3f(0, 0, 0);
+  }
+}
 } // namespace pbrt

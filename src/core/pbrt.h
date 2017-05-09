@@ -14,6 +14,7 @@ class Aggregate;
 class AnimatedTransform;
 class AreaLight;
 class AtomicFloat;
+class BSDF;
 class CameraSample;
 class Film;
 class Filter;

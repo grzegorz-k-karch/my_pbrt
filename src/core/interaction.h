@@ -51,11 +51,17 @@ public:
                           const Normal3f& dndus, const Normal3f& dndvs,
                           bool orientationIsAuthoritative);
 
+  void ComputeScatteringFunctions(const RayDifferential& ray, MemoryArena& arena,
+      bool allowMultipleLobs, TransportMode mode);
+
+  void ComputeDifferentials(const RayDifferential& ray) const;
   // data
   Point2f uv;
   Vector3f dpdu, dpdv;
   Normal3f dndu, dndv;
   const Shape *shape = nullptr;
+  mutable Vector3f dpdx, dpdy;
+  mutable Float dudx = 0, dvdx = 0, dudy = 0, dvdy = 0;
 
   struct {
     Normal3f n;
@@ -64,7 +70,7 @@ public:
   } shading;
 
   const Primitive *primitive = nullptr;
-// TODO BSDF *bsdf = nullptr;
+  BSDF *bsdf = nullptr;
 // TODO  BSSRDF *bssrdf = nullptr;
 };
 
