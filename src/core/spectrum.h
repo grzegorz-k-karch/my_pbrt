@@ -206,6 +206,9 @@ inline void XYZToRGB(const Float xyz[3], Float rgb[3]) {
   rgb[2] =  0.055648f*xyz[0] - 0.204043f*xyz[1] + 1.057311f*xyz[2];
 }
 
+void Blackbody(const Float* lambda, int n, Float T, Float* Le);
+void BlackbodyNormalized(const Float* lambda, int n, Float T, Float* Le);
+
 } // namespace pbrt
 
 #endif // CORE_SPECTRUM_H

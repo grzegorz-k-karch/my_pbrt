@@ -18,6 +18,7 @@ class BSDF;
 class CameraSample;
 class Film;
 class Filter;
+struct Interaction;
 class Material;
 class Medium;
 class MediumInterface;
@@ -32,6 +33,7 @@ class Transform;
 class RGBSpectrum;
 class RNG;
 class SampledSpectrum;
+class Scene;
 typedef RGBSpectrum Spectrum;
 //typedef SampledSpectrum Spectrum;
 
