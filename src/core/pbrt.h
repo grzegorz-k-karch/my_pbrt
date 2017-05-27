@@ -33,6 +33,7 @@ class Transform;
 class RGBSpectrum;
 class RNG;
 class SampledSpectrum;
+class Sampler;
 class Scene;
 typedef RGBSpectrum Spectrum;
 //typedef SampledSpectrum Spectrum;

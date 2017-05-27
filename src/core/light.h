@@ -5,6 +5,7 @@
 #include "geometry.h"
 #include "transform.h"
 #include "medium.h"
+#include "interaction.h"
 
 namespace pbrt {
 
@@ -16,6 +17,21 @@ inline bool IsDeltaLight(int flags) {
   return flags & (int)LightFlags::DeltaPosition ||
       flags & (int)LightFlags::DeltaDirection;
 }
+
+class VisibilityTester {
+public:
+  VisibilityTester(const Interaction& p0, const Interaction& p1)
+: p0(p0), p1(p1) {}
+
+  const Interaction& P0() const { return p0; }
+  const Interaction& P1() const { return p1; }
+
+  bool Unoccluded(const Scene& scene) const;
+
+  Spectrum Tr(const Scene& scene, Sampler& sampler) const;
+private:
+  Interaction p0, p1;
+};
 
 class Light {
 
@@ -36,12 +52,13 @@ public:
   virtual Spectrum Power() const = 0;
 
   virtual void Preprocess(const Scene& scene) {}
-protected:
-  const Transform lightToWorld, worldToLight;
-private:
+
   const int flags;
   const int nSamples;
   const MediumInterface mediumInterface;
+
+protected:
+  const Transform lightToWorld, worldToLight;
 };
 
 

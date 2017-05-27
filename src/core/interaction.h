@@ -5,6 +5,7 @@
 #include "medium.h"
 #include "pbrt.h"
 #include "primitive.h"
+#include "spectrum.h"
 
 namespace pbrt {
 
@@ -14,6 +15,8 @@ struct Interaction {
   Interaction(const Point3f& p, const Normal3f& n, const Vector3f& pError,
       const Vector3f& wo, Float time) // TODO, const MediumInterface& mediumInterface)
   : p(p), time(time), pError(pError), wo(wo), n(n) {} // TODO , mediumInterface(mediumInterface) {}
+  Interaction(const Point3f& p, Float time, const MediumInterface& mediumInterface)
+  : p(p), time(time), mediumInterface(mediumInterface) {}
 
   bool IsSurfaceInteraction() const {
     return n != Normal3f();
@@ -28,6 +31,12 @@ struct Interaction {
     Vector3f d = p2 - origin;
     return Ray(origin, d, 1 - ShadowEpsilon, time);//, GetMedium(d)); // TODO
   }
+  Ray SpawnRayTo(const Interaction& it) const {
+    Point3f origin = OffsetRayOrigin(p, pError, n, it.p - p);
+    Point3f target = OffsetRayOrigin(it.p, it.pError, it.n, origin - it.p);
+    Vector3f d = target - origin;
+    return Ray(origin, d, 1 - ShadowEpsilon, time);//, GetMedium(d)); // TODO
+  }
 
   // data
   Point3f p;
@@ -35,7 +44,7 @@ struct Interaction {
   Vector3f pError;
   Vector3f wo;
   Normal3f n;
-  // TODO MediumInterface mediumInterface;
+  MediumInterface mediumInterface;
 };
 
 class SurfaceInteraction : public Interaction {

@@ -1,6 +1,6 @@
 all: pbrt
 
-pbrt: constant.o matte.o plastic.o reflection.o bvh.o boxFilter.o triangleFilter.o gaussianFilter.o sincFilter.o filter.o stratified.o camera.o spectrum.o quaternion.o material.o primitive.o pbrt.o sphere.o efloat.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o sampling.o whitted.o light.o transform.o error.o interaction.o
+pbrt: point.o constant.o matte.o plastic.o reflection.o bvh.o boxFilter.o triangleFilter.o gaussianFilter.o sincFilter.o filter.o stratified.o camera.o spectrum.o quaternion.o material.o primitive.o pbrt.o sphere.o efloat.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o sampling.o whitted.o light.o transform.o error.o interaction.o
 	g++ $^ -o $@
 
 pbrt.o: main/pbrt.cpp
@@ -14,6 +14,9 @@ quaternion.o: core/quaternion.cpp core/quaternion.h
 
 boxFilter.o: filters/box.cpp filters/box.h
 	g++ -std=c++11 -c $< -Icore -o boxFilter.o
+
+point.o: lights/point.cpp lights/point.h
+	g++ -std=c++11 -c $< -Icore -o point.o
 
 triangleFilter.o: filters/triangle.cpp filters/triangle.h
 	g++ -std=c++11 -c $< -Icore -o triangleFilter.o
