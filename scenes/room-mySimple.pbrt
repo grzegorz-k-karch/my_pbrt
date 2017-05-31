@@ -1,0 +1,25 @@
+Scale 1 1 1
+LookAt 1 1 -1    0 0 0   0 1 0
+Camera "perspective" "float fov" [50]
+
+PixelFilter "box"
+Film "image" "integer xresolution" [450] "integer yresolution" [270]
+    "string filename" "room-mySimple.exr"
+
+Sampler "stratified"
+Integrator "whitted"
+
+WorldBegin
+
+# lights
+LightSource "point" "color I" [10 10 10] "point from" [1 2 1]
+
+ObjectBegin "sphere"
+Material "plastic" "color Kd" [.5 .3 .8] "color Ks" [.2 .2 .2] "float roughness" [.1]
+Shape "plymesh" "string filename" "geometry/sphere.ply"
+ObjectEnd
+
+ObjectInstance "sphere"
+
+
+WorldEnd

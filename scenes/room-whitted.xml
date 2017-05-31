@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<scene name="test scene">
+  <!-- <transform name="toWorld"> -->
+  <scale x="-1" y="1" z="1"/>
+  <!-- </transform> -->
+
+  <camera type="perspective">
+    <lookAt origin="18, 3.5, 2" target="8, -0.5, 20" up="0, 1, 0"/>
+    <float name="fov" value="50"/>
+  </camera>
+
+  <pixelFilter type="box"/>
+
+  <film type="image">
+    <integer name="xresolution" value="450"/>
+    <integer name="yresolution" value="270"/>
+    <string name="filename" value=room-whitted.exr"/>
+  </film>
+
+  <sampler type="whitted">
+    <integer name="pixelsamples" value="8192"/>
+  </sampler>
+
+  <integrator type="path"/>
+
+  <world name="test">
+    <light type="spot" pointFrom="70, 230, -300" pointTo="10, 10, 10">
+      
+    </light>
+
+  </world>
+</scene>

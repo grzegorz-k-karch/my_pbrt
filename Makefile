@@ -27,8 +27,8 @@ $(MAIN_OBJECT): $(SOURCEDIR)/main/$(MAIN_OBJECT:.o=.cpp)
 $(CORE_OBJECTS): $(CORE_DIR)/%.o
 
 
-$(CORE_DIR)/%.o: $(SOURCEDIR)/core/%.cpp
-	g++ -std=c++11 -c $< -o $(BUILDDIR)/$@
+# $(CORE_DIR)/%.o: $(SOURCEDIR)/core/%.cpp
+# 	g++ -std=c++11 -c $< -o $(BUILDDIR)/$@
 
 
 
