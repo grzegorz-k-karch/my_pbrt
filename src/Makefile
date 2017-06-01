@@ -1,6 +1,6 @@
 all: pbrt
 
-pbrt: point.o api.o constant.o matte.o plastic.o reflection.o bvh.o boxFilter.o triangleFilter.o gaussianFilter.o sincFilter.o filter.o stratified.o camera.o spectrum.o quaternion.o material.o primitive.o pbrt.o sphere.o efloat.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o sampling.o whitted.o light.o transform.o error.o interaction.o
+pbrt: point.o api.o constant.o matte.o plastic.o reflection.o bvh.o boxFilter.o triangleFilter.o gaussianFilter.o sincFilter.o filter.o stratified.o camera.o spectrum.o quaternion.o material.o primitive.o pbrt.o sphere.o efloat.o triangle.o texture.o scene.o integrator.o parallel.o film.o memory.o shape.o sampler.o sampling.o whitted.o directlighting.o light.o transform.o error.o interaction.o
 	g++ $^ -o $@
 
 pbrt.o: main/pbrt.cpp
@@ -115,6 +115,9 @@ interaction.o: core/interaction.cpp core/interaction.h
 	g++ -std=c++11 -c $<
 
 whitted.o: integrators/whitted.cpp integrators/whitted.h
+	g++ -std=c++11 -c $< -Icore
+
+directlighting.o: integrators/directlighting.cpp integrators/directlighting.h
 	g++ -std=c++11 -c $< -Icore
 
 clean:

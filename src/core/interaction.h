@@ -61,7 +61,8 @@ public:
                           bool orientationIsAuthoritative);
 
   void ComputeScatteringFunctions(const RayDifferential& ray, MemoryArena& arena,
-      bool allowMultipleLobs, TransportMode mode);
+				  bool allowMultipleLobs = false,
+				  TransportMode mode = TransportMode::Radiance);
 
   void ComputeDifferentials(const RayDifferential& ray) const;
   // data
