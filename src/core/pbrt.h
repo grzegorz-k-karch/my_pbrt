@@ -8,6 +8,9 @@
 #include <cstdint>
 #include <cstring>
 #include <string>
+#include <memory>
+/* #include "glog/logging.h" */
+#include "error.h"
 
 namespace pbrt {
   
@@ -24,18 +27,21 @@ namespace pbrt {
   class Medium;
   class MediumInterface;
   class MemoryArena;
+  class ParamSet;
+  template <typename T>
+    struct ParamSetItem;
   class Primitive;
   class PixelSampler;
   class Quaternion;
   class Ray;
-  class Shape;
-  class SurfaceInteraction;
-  class Transform;
   class RGBSpectrum;
   class RNG;
   class SampledSpectrum;
   class Sampler;
   class Scene;
+  class Shape;
+  class SurfaceInteraction;
+  class Transform;
   typedef RGBSpectrum Spectrum;
   //typedef SampledSpectrum Spectrum;
 

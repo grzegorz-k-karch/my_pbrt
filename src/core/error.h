@@ -6,12 +6,13 @@
 namespace pbrt {
 
 #ifdef __GNUC__
-#define PRINT_FUNC __attribute__((__format__(__printf__, 1, 2)))
+#define PRINTF_FUNC __attribute__((__format__(__printf__, 1, 2)))
 #else
-#define PRINT_FUNC
+#define PRINTF_FUNC
 #endif//__GNUC__
-  
-  void Error(const char*, ...) PRINT_FUNC;
+
+  void Warning(const char *, ...) PRINTF_FUNC;
+  void Error(const char*, ...) PRINTF_FUNC;
 
 } // namespace pbrt
 

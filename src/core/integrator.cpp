@@ -36,37 +36,37 @@ void SamplerIntegrator::Render(const Scene& scene) {
         // <get FilmTile for tile>
         std::unique_ptr<FilmTile> filmTile = camera->film->GetFilmTile(tileBounds);
         // <loop over pixel in tile to render them>
-//        for (Point2i pixel : tileBounds) {
-//        	tileSampler->StartPixel(pixel);
-//        	do {
-//        		// <initialize CameraSample for current sample>
-//        		CameraSample cameraSample = tileSampler->GetCameraSample(pixel);
-//
-//        		// <generate camera ray for current sample>
-//        		RayDifferential ray;
-//        		Float rayWeight = camera->GenerateRayDifferential(cameraSample, &ray);
-//        		ray.ScaleDifferential(1/std::sqrt(tileSampler->samplesPerPixel));
-//
-//        		// <evaluare radiance along camera ray>
-//        		Spectrum L(0.0f);
-//        		if (rayWeight > 0) {
-//        			L = Li(ray, scene, *tileSampler, arena);
-//        			// ... issue warning if unexpected radiance value is returned
-//        		}
-//
-//        		// <add camera ray's contribution to image>
-//        		filmTile->AddSample(cameraSample.pFilm, L, rayWeight);
-//
-//        		// <free MemoryArena memory from computing image sample value>
-//        		arena.Reset();
-//
-//        	} while (tileSampler->StartNextSample());
-//        }
+        for (Point2i pixel : tileBounds) {
+        	tileSampler->StartPixel(pixel);
+        	do {
+        		// <initialize CameraSample for current sample>
+        		CameraSample cameraSample = tileSampler->GetCameraSample(pixel);
+
+        		// <generate camera ray for current sample>
+        		RayDifferential ray;
+        		Float rayWeight = camera->GenerateRayDifferential(cameraSample, &ray);
+        		ray.ScaleDifferentials(1/std::sqrt(tileSampler->samplesPerPixel));
+
+        		// <evaluare radiance along camera ray>
+        		Spectrum L(0.0f);
+        		if (rayWeight > 0) {
+        			L = Li(ray, scene, *tileSampler, arena);
+        			// TODO issue warning if unexpected radiance value is returned
+        		}
+
+        		// <add camera ray's contribution to image>
+        		filmTile->AddSample(cameraSample.pFilm, L, rayWeight);
+
+        		// <free MemoryArena memory from computing image sample value>
+        		arena.Reset();
+
+        	} while (tileSampler->StartNextSample());
+        }
         // <merge image tile into Film>
-//        camera->film->MergeFilmTile(std::move(filmTile));
+        camera->film->MergeFilmTile(std::move(filmTile));
     }, nTiles);
     // <save final image after rendering>
-//    camera->film->WriteImage();
+    camera->film->WriteImage();
 }
 
 Spectrum SamplerIntegrator::SpecularReflect(const RayDifferential& ray,

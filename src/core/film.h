@@ -92,7 +92,7 @@ public:
 	void SetImage(const Spectrum* img) const;
 	void AddSplat(const Point2f& p, const Spectrum& v);
 
-	void WriteImage(Float splatScale);
+	void WriteImage(Float splatScale=1);
 
 	const Point2i fullResolution;
 	const Float diagonal;

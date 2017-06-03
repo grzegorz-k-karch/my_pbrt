@@ -63,7 +63,11 @@ protected:
 
 
 class AreaLight : public Light {
+  // TODO
+  AreaLight(const Transform& lightToWorld, const MediumInterface& medium,
+      int nSamples);
 
+  virtual Spectrum L(const Interaction& intr, const Vector3f& w) const = 0;
 };
 
 }

@@ -65,6 +65,9 @@ public:
 				  TransportMode mode = TransportMode::Radiance);
 
   void ComputeDifferentials(const RayDifferential& ray) const;
+
+  Spectrum Le(const Vector3f& w) const;
+
   // data
   Point2f uv;
   Vector3f dpdu, dpdv;

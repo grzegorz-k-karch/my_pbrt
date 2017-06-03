@@ -63,4 +63,12 @@ void SurfaceInteraction::ComputeDifferentials(const RayDifferential& ray) const 
     dpdx = dpdy = Vector3f(0, 0, 0);
   }
 }
+
+Spectrum SurfaceInteraction::Le(const Vector3f& w) const {
+
+  const AreaLight *area = primitive->GetAreaLight();
+//  return area ? area->L(*this, w) : Spectrum(0.0f);
+  return Spectrum(0.0f);
+}
+
 } // namespace pbrt
