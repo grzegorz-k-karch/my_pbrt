@@ -1,4 +1,5 @@
 #include "perspective.h"
+#include "sampling.h"
 
 namespace pbrt {
 
@@ -19,7 +20,7 @@ PerspectiveCamera::PerspectiveCamera(const AnimatedTransform& cameraToWorld, con
   Point3f pMax = rasterToCamera(Point3f(res.x, res.y, 0));
   pMin /= pMin.z;
   pMax /= pMax.z;
-  A = std::abs(pMax.x - pMin.x)*(pMax.y - pMin.y);
+  //A = std::abs(pMax.x - pMin.x)*(pMax.y - pMin.y);
 }
 
 Float PerspectiveCamera::GenerateRay(const CameraSample& sample, Ray* ray) const {
@@ -87,8 +88,8 @@ Float PerspectiveCamera::GenerateRayDifferential(const CameraSample& sample,
     ray->rxDirection = Normalize(pFocus - ray->rxOrigin);
 
     Vector3f dy = Normalize(Vector3f(pCamera + dyCamera));
-    Float ft = focalDistance/dy.z;
-    Point3f pFocus = Point3f(0, 0, 0) + (ft*dy);
+    ft = focalDistance/dy.z;
+    pFocus = Point3f(0, 0, 0) + (ft*dy);
     ray->ryOrigin = Point3f(pLens.x, pLens.y, 0);
     ray->ryDirection = Normalize(pFocus - ray->ryOrigin);
 

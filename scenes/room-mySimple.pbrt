@@ -7,7 +7,7 @@ Film "image" "integer xresolution" [450] "integer yresolution" [270]
     "string filename" "room-mySimple.exr"
 
 Sampler "stratified"
-Integrator "whitted"
+Integrator "directlighting"
 
 WorldBegin
 

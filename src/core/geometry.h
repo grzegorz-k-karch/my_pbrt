@@ -400,6 +400,16 @@ public:
         Float inv = 1/s;
         return Point3<T>(x*inv, y*inv, z*inv);
     }
+    template <typename U>
+    Point3<T>& operator/=(U s) {
+        Assert(s != 0);
+        Float inv = 1/s;
+        x *= inv;
+        y *= inv;
+        z *= inv;
+        return *this;
+    }
+
 
     bool HasNaNs() const {
         return std::isnan(x) || std::isnan(y) || std::isnan(z);

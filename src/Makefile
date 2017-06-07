@@ -8,13 +8,13 @@ primitive.o pbrt.o sphere.o efloat.o triangle.o \
 texture.o scene.o integrator.o parallel.o film.o \
 memory.o shape.o sampler.o sampling.o whitted.o \
 directlighting.o light.o transform.o error.o \
-interaction.o
+interaction.o perspective.o
 
 pbrt: ${OBJS} 
 	g++ $^ -o $@
 
 pbrt.o: main/pbrt.cpp
-	g++ -std=c++11 -Icore -c $^
+	g++ -std=c++11 -Icore -Ilights -Icameras -c $^
 
 reflection.o: core/reflection.cpp core/reflection.h
 	g++ -std=c++11 -c $<

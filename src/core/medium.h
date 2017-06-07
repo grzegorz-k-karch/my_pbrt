@@ -8,7 +8,9 @@ class Medium {
 };
 
 struct MediumInterface {
-
+  MediumInterface()
+  : inside(nullptr), outside(nullptr) {}
+  const Medium *inside, *outside;
 };
 
 } // namespace pbrt
