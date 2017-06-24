@@ -17,9 +17,9 @@ public:
           const std::vector<std::shared_ptr<Light>>& lights)
     : lights(lights), aggregate(aggregate) {
         // <scene constructor implementation>
-// TODO       worldBound = aggregate->WorldBound();
+      worldBound = aggregate->WorldBound();
         for (const auto &light : lights) {
-// TODO         light->Preprocess(*this);
+          light->Preprocess(*this);
         }
     }
 

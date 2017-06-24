@@ -10,11 +10,16 @@
 #include "point.h" // gkk
 #include "perspective.h" // gkk
 #include "filter.h"
+#include "texture.h" // gkk
+#include "../textures/constant.h" // gkk
 #include "../filters/box.h" // gkk
 #include "primitive.h" // gkk
 #include "light.h" // gkk
 #include "../lights/point.h" // gkk
-#include "../shapes/triangle.h"
+#include "../shapes/triangle.h" // gkk
+#include "../accelerators/bvh.h" // gkk
+#include "../materials/matte.h" // gkk
+
 
 using namespace pbrt;
 
@@ -22,6 +27,7 @@ using namespace pbrt;
 Scene* buildScene() {
 
   Transform objectToWorld = Transform();
+  Transform worldToObject = Transform();
   int nTriangles = 4;
   int *vertexIndices = new int[nTriangles*3];
   vertexIndices[0] = 0;
@@ -38,9 +44,37 @@ Scene* buildScene() {
   vertexIndices[11] = 1;
 
   int nVertices = 4;
-  std::shared_ptr<Point3f> P(new Point3f[nVertices]);
-//  TriangleMesh mesh = TriangleMesh(objectToWorld, nTriangles, vertexIndices, nVertices,
-//      );
+  Point3f *P = new Point3f[nVertices];
+  P[0] = Point3f(0,0,0);
+  P[1] = Point3f(1,0,0);
+  P[2] = Point3f(0,1,0);
+  P[3] = Point3f(0,0,1);
+  Normal3f *N = new Normal3f[nVertices];
+  N[0] = Normal3f(0.577,0.577,0.577);
+  N[1] = Normal3f(1,0,0);
+  N[2] = Normal3f(0,1,0);
+  N[3] = Normal3f(0,0,1);
+
+  std::shared_ptr<TriangleMesh> mesh(new TriangleMesh(objectToWorld, nTriangles, vertexIndices,
+      nVertices, P, nullptr, N, nullptr, nullptr));
+
+  std::shared_ptr<Triangle> triangle(new Triangle(&objectToWorld, &worldToObject,
+      false, mesh, nTriangles));
+
+
+  Float rgb[3] = {.5, .3, .8};
+  std::shared_ptr<ConstantTexture<RGBSpectrum>> Kd
+        (new ConstantTexture<RGBSpectrum>(RGBSpectrum::FromRGB(rgb)));
+
+  Float s = 30.f;
+  std::shared_ptr<ConstantTexture<Float>> Ks
+          (new ConstantTexture<Float>(s));
+
+  std::shared_ptr<MatteMaterial> material(new MatteMaterial(Kd, Ks, nullptr));
+
+  std::vector<std::shared_ptr<Primitive>> p;
+//  std::shared_ptr<GeometricPrimitive> triangleMesh(new GeometricPrimitive(triangle, ));
+
 
   Transform lightToWorld = Translate(Vector3f(1,2,1));
   MediumInterface mediumIface;
@@ -65,9 +99,9 @@ Scene* buildScene() {
       shutterOpen, shutterClose, lensRadius, focalDistance, fov, film, medium);
 
 
-  std::shared_ptr<Primitive> aggregate;
+//  std::shared_ptr<Primitive> aggregate(new BVHAccel());
 //  aggregate->
-  Scene *scene;// = new Scene(, );
+  Scene *scene;// = new Scene();
 
   return scene;
 }
