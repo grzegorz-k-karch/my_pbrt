@@ -6,6 +6,7 @@
 #include "memory.h"
 #include "camera.h"
 #include "spectrum.h"
+#include "reflection.h"
 
 namespace pbrt {
 
@@ -74,19 +75,19 @@ Spectrum SamplerIntegrator::SpecularReflect(const RayDifferential& ray,
                                             const Scene& scene, Sampler& sampler,
                                             MemoryArena &arena, int depth) const {
 
-//    Vector3f wo = isect.wo, wi;
-//    Float pdf;
-//    BxDFType type = BxDFType(BSDF_REFLECTION | BSDF_SPECULAR);
-//    Spectrum f = isect.bsdf->Sample_f(wo, &wi, sampler.Get2D(), &pdf, type);
-//
-//    const Normal3f ns = isect.shading.n;
-//    if (pdf > 0 && !f.IsBlack() && AbsDot(wi, ns) != 0) {
-//        // ... compute ray differential rd for specular reflection
-//        return f*Li(rd, scene, sampler, arena, isect, depth+1)*AbsDot(wi,ns)/pdf;
-//    }
-//    else {
-//        return Spectrum(0.0f);
-//    }
+    Vector3f wo = isect.wo, wi;
+    Float pdf;
+    BxDFType type = BxDFType(BSDF_REFLECTION | BSDF_SPECULAR);
+    Spectrum f = isect.bsdf->Sample_f(wo, &wi, sampler.Get2D(), &pdf, type);
+
+    const Normal3f ns = isect.shading.n;
+    if (pdf > 0 && !f.IsBlack() && AbsDot(wi, ns) != 0) {
+        // <compute ray differential rd for specular reflection>
+        return f*Li(rd, scene, sampler, arena, isect, depth+1)*AbsDot(wi,ns)/pdf;
+    }
+    else {
+        return Spectrum(0.0f);
+    }
 }
 
 }

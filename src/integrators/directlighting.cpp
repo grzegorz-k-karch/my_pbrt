@@ -27,8 +27,21 @@ Spectrum DirectLightingIntegrator::Li(const RayDifferential& ray, const Scene& s
   L += isect.Le(wo);
 
   if (scene.lights.size() > 0) {
-    // TODO [2017-06-01]
+    if (strategy == LightStrategy::UniformSampleAll) {
+      // TODO L += UniformSampleAllLights(isect, scene, arena, sampler, nLightSamples);
+    }
+    else {
+      L += UniformSampleOneLight(isect, scene, arena, sampler);
+    }
   }
+
+  if (depth + 1 < maxDepth) {
+
+    L += SpecularReflect(ray, isect, scene, sampler, arena, depth);
+    // TODO L += SpecularTransmit();
+  }
+
+  return L;
 }
 
 } // namespace pbrt

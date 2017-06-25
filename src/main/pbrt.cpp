@@ -7,9 +7,12 @@
 #include "transform.h" // gkk
 #include "medium.h" // gkk
 #include "spectrum.h" // gkk
+#include "scene.h" // gkk
 #include "point.h" // gkk
 #include "perspective.h" // gkk
-#include "filter.h"
+#include "filter.h" // gkk
+#include "integrator.h"
+#include "../integrators/directlighting.h"
 #include "texture.h" // gkk
 #include "../textures/constant.h" // gkk
 #include "../filters/box.h" // gkk
@@ -26,6 +29,7 @@ using namespace pbrt;
 // gkk
 Scene* buildScene() {
 
+  // geometry----------------------------------------------------------------
   Transform objectToWorld = Transform();
   Transform worldToObject = Transform();
   int nTriangles = 4;
@@ -60,20 +64,26 @@ Scene* buildScene() {
 
   std::shared_ptr<Triangle> triangle(new Triangle(&objectToWorld, &worldToObject,
       false, mesh, nTriangles));
+  //~geometry----------------------------------------------------------------
 
-
+  // material----------------------------------------------------------------
   Float rgb[3] = {.5, .3, .8};
   std::shared_ptr<ConstantTexture<RGBSpectrum>> Kd
         (new ConstantTexture<RGBSpectrum>(RGBSpectrum::FromRGB(rgb)));
-
-  Float s = 30.f;
+  Float s = 0.f; // if 0 then LambertianReflection BRDF
   std::shared_ptr<ConstantTexture<Float>> Ks
           (new ConstantTexture<Float>(s));
-
   std::shared_ptr<MatteMaterial> material(new MatteMaterial(Kd, Ks, nullptr));
+  //~material----------------------------------------------------------------
+
+  // medium interface--------------------------------------------------------
+  MediumInterface mediumiface;
+  //~medium interface--------------------------------------------------------
 
   std::vector<std::shared_ptr<Primitive>> p;
-//  std::shared_ptr<GeometricPrimitive> triangleMesh(new GeometricPrimitive(triangle, ));
+  std::shared_ptr<GeometricPrimitive> triangleMesh(
+      new GeometricPrimitive(triangle, material, nullptr, mediumiface));
+  p.push_back(triangleMesh);
 
 
   Transform lightToWorld = Translate(Vector3f(1,2,1));
@@ -99,9 +109,8 @@ Scene* buildScene() {
       shutterOpen, shutterClose, lensRadius, focalDistance, fov, film, medium);
 
 
-//  std::shared_ptr<Primitive> aggregate(new BVHAccel());
-//  aggregate->
-  Scene *scene;// = new Scene();
+  std::shared_ptr<BVHAccel> aggregate(new BVHAccel(p, 12, BVHAccel::SplitMethod::HLBVH));
+  Scene *scene = new Scene(aggregate, lights);
 
   return scene;
 }
@@ -110,34 +119,42 @@ Scene* buildScene() {
 int main(int argc, char* argv[]) {
 
   // gkk
-  if (argc != 3) {
-    return 0;
-  }
+//  if (argc != 3) {
+//    return 0;
+//  }
   
-  Options options;
-  std::vector<std::string> filenames;
-  filenames.push_back(argv[1]); // gkk
+//  Options options;
+//  std::vector<std::string> filenames;
+//  filenames.push_back(argv[1]); // gkk
   
-  // process command line arguments  
-  options.imageFile = argv[2]; // gkk
+//  // process command line arguments
+//  options.imageFile = argv[2]; // gkk
+//
+//  // pbrtInit();
+//  PbrtOptions = options; // gkk
   
-  // pbrtInit();
-  PbrtOptions = options; // gkk
-  
-  // <process scene description>
-  if (filenames.size() == 0) {
-	  // <parse scene from standard input>
-//      ParseFile("-");
-  }
-  else {
-	  // <parse scene from input files>
-      for (const std::string &f : filenames) {
-//          if (!ParseFile(f)) {
-//              Error("Couldn't open scene file \"%s\"", f.c_str());
-//          }
-      }
-  }
-  // pbrtCleanup();
+  // gkk---------------------------------------------------------------------
+  Scene *scene = buildScene();
+  std::cout << "yellow" << std::endl;
+
+  std::shared_ptr<DirectLightingIntegrator> directli(new DirectLightingIntegrator());
+  directli->Render(*scene);
+  //~gkk---------------------------------------------------------------------
+
+//  // <process scene description>
+//  if (filenames.size() == 0) {
+//	  // <parse scene from standard input>
+////      ParseFile("-");
+//  }
+//  else {
+//	  // <parse scene from input files>
+//      for (const std::string &f : filenames) {
+////          if (!ParseFile(f)) {
+////              Error("Couldn't open scene file \"%s\"", f.c_str());
+////          }
+//      }
+//  }
+//  // pbrtCleanup();
 
   return 0;
 }
